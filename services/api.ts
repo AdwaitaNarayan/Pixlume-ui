@@ -1,0 +1,101 @@
+/**
+ * Pixlume – Axios API client
+ *
+ * Base URL is read from the environment variable NEXT_PUBLIC_API_URL.
+ * Default: http://localhost:8000
+ *
+ * Backend contract
+ * ----------------
+ * GET  /photos                    → PhotoListResponse
+ * GET  /photos/:id                → PhotoRead
+ * GET  /search?tag=<tag>          → PhotoListResponse
+ * POST /admin/upload  (protected) → PhotoRead
+ */
+
+import axios from 'axios';
+
+// ---------------------------------------------------------------------------
+// Types (mirrors the Pydantic schemas returned by the FastAPI backend)
+// ---------------------------------------------------------------------------
+export interface Photo {
+  id: string;
+  title: string;
+  caption: string | null;
+  tags: string[] | null;
+  thumbnail_url: string | null;
+  image_720_url: string | null;
+  image_1080_url: string | null;
+  image_2k_url: string | null;
+  image_4k_url: string | null;
+  created_at: string; // ISO-8601
+  downloads: number;
+}
+
+export interface PhotoListResponse {
+  total: number;
+  page: number;
+  page_size: number;
+  results: Photo[];
+}
+
+// ---------------------------------------------------------------------------
+// Axios instance
+// ---------------------------------------------------------------------------
+const axiosClient = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  timeout: 30_000, // 30 s
+});
+
+// ---------------------------------------------------------------------------
+// Public gallery functions
+// ---------------------------------------------------------------------------
+
+/**
+ * Fetch all photos (paginated, newest first).
+ */
+export async function getPhotos(
+  page = 1,
+  pageSize = 20
+): Promise<PhotoListResponse> {
+  const { data } = await axiosClient.get<PhotoListResponse>('/photos', {
+    params: { page, page_size: pageSize },
+  });
+  return data;
+}
+
+/**
+ * Fetch a single photo by its UUID.
+ */
+export async function getPhotoById(id: string): Promise<Photo> {
+  const { data } = await axiosClient.get<Photo>(`/photos/${id}`);
+  return data;
+}
+
+/**
+ * Search photos by tag.
+ * Uses GET /search?tag=<tag> – maps to the backend tag-search endpoint.
+ */
+export async function searchPhotos(
+  tag: string,
+  page = 1,
+  pageSize = 20
+): Promise<PhotoListResponse> {
+  const { data } = await axiosClient.get<PhotoListResponse>('/search', {
+    params: { tag, page, page_size: pageSize },
+  });
+  return data;
+}
+
+// ---------------------------------------------------------------------------
+// Compatibility export used by existing gallery components
+// ---------------------------------------------------------------------------
+export const galleryService = {
+  getPhotos,
+  getPhotoById,
+  searchPhotos,
+};
+
+export default axiosClient;
