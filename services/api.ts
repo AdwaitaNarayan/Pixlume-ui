@@ -81,10 +81,16 @@ export async function getPhotoById(id: string): Promise<Photo> {
 export async function searchPhotos(
   tag: string,
   page = 1,
-  pageSize = 20
+  pageSize = 20,
+  filters?: {
+    resolution?: string;
+    date?: string;
+    category?: string;
+    collection?: string;
+  }
 ): Promise<PhotoListResponse> {
-  const { data } = await axiosClient.get<PhotoListResponse>('/search', {
-    params: { tag, page, page_size: pageSize },
+  const { data } = await axiosClient.get<PhotoListResponse>('/photos/search', {
+    params: { tag, page, page_size: pageSize, ...filters },
   });
   return data;
 }
