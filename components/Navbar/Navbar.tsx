@@ -17,9 +17,9 @@ const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { name: 'Gallery', href: '/' },
-    { name: 'Collections', href: '#collections' },
-    { name: 'About', href: '#about' },
+    { name: 'Gallery', href: '/gallery' },
+    { name: 'Collections', href: '/#collections' },
+    { name: 'About', href: '/#about' },
   ];
 
   return (
@@ -72,11 +72,6 @@ const Navbar = () => {
 
           {/* ────── ACTIONS SECTION ────── */}
           <div className="flex items-center gap-2 sm:gap-3">
-             {/* Small screen Search shortcut */}
-             <button className="hidden sm:flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-100 dark:bg-white/5 text-zinc-500 dark:text-zinc-400 hover:text-cyan-600 dark:hover:text-white transition-colors">
-              <Search className="w-4.5 h-4.5" />
-            </button>
-
             {/* User Profile / Admin Link */}
             <Link 
               href="/admin" 

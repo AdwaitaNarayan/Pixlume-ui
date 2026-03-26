@@ -1,19 +1,40 @@
 "use client";
 
-import { useState } from "react";
-import Gallery from "../../components/Gallery";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { getPhotos, Photo } from "../../services/api";
+import PhotoCard from "../../components/PhotoCard";
+import PhotoLightbox from "../../components/PhotoLightbox";
+import AboutSection from "../../components/AboutSection";
+import Footer from "../../components/Footer";
+import Link from "next/link";
 
 export default function Home() {
+  const router = useRouter();
   const [heroSearch, setHeroSearch] = useState("");
+  const [featuredPhotos, setFeaturedPhotos] = useState<Photo[]>([]);
+  const [loadingFeatured, setLoadingFeatured] = useState(true);
+  const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
+
+  // Fetch a small subset for the homepage preview
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      try {
+        const data = await getPhotos(1, 4); // Just get the top 4
+        setFeaturedPhotos(data.results);
+      } catch (err) {
+        console.error("Failed to load featured photos:", err);
+      } finally {
+        setLoadingFeatured(false);
+      }
+    };
+    fetchFeatured();
+  }, []);
 
   const handleHeroSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const event = new CustomEvent("hero-search", { detail: heroSearch.trim() });
-    window.dispatchEvent(event);
-    window.scrollTo({
-      top: window.innerHeight * 0.7,
-      behavior: "smooth",
-    });
+    if (!heroSearch.trim()) return;
+    router.push(`/gallery?search=${encodeURIComponent(heroSearch.trim())}`);
   };
 
   return (
@@ -85,10 +106,75 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main Content (Gallery) */}
-      <main className="relative z-20 -mt-10 bg-white dark:bg-zinc-950 rounded-t-[3rem] shadow-[0_0_40px_rgba(0,0,0,0.05)] dark:shadow-[0_0_40px_rgba(0,0,0,0.5)]">
-        <Gallery />
+      {/* Featured Preview Section */}
+      <main className="relative z-20 -mt-10 bg-white dark:bg-zinc-950 rounded-t-[3rem] shadow-[0_0_40px_rgba(0,0,0,0.05)] dark:shadow-[0_0_40px_rgba(0,0,0,0.5)] transition-colors duration-300">
+        <section className="mx-auto max-w-7xl px-6 py-20 text-center lg:px-8">
+            <h2 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-white sm:text-4xl">Featured Shots</h2>
+            <p className="mx-auto mt-4 max-w-2xl text-zinc-600 dark:text-zinc-400">A glimpse of our latest high-resolution professional collections.</p>
+            
+            <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                {loadingFeatured ? (
+                    [1, 2, 3, 4].map(i => <div key={i} className="skeleton-shimmer aspect-[4/5] rounded-2xl" />)
+                ) : (
+                    featuredPhotos.map((photo) => (
+                        <PhotoCard key={photo.id} photo={photo} onClick={() => setSelectedPhoto(photo)} />
+                    ))
+                )}
+            </div>
+
+            <div className="mt-16 flex justify-center">
+                <Link 
+                    href="/gallery" 
+                    className="group relative flex items-center gap-2 rounded-2xl bg-zinc-900 px-8 py-4 text-sm font-bold text-white transition-all hover:bg-black dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white"
+                >
+                    Explore Full Gallery
+                    <svg className="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                </Link>
+            </div>
+        </section>
       </main>
+
+      {/* Collections Section Placeholder */}
+      <section id="collections" className="py-24 bg-zinc-50 dark:bg-zinc-900/10 transition-colors duration-300">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8 text-center">
+              <h2 className="text-3xl font-bold text-zinc-900 dark:text-white sm:text-4xl">Featured Collections</h2>
+              <p className="mt-4 text-zinc-600 dark:text-zinc-400">Curated sets of high-resolution imagery specifically tailored for your projects.</p>
+              <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {[
+                      { name: "Nature Wonders", count: 45, image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&q=80&w=800" },
+                      { name: "Urban Architecture", count: 32, image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=800" },
+                      { name: "Abstract Vibe", count: 28, image: "https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&q=80&w=800" },
+                  ].map((col) => (
+                      <div key={col.name} className="group relative overflow-hidden rounded-3xl cursor-pointer">
+                          <img src={col.image} alt={col.name} className="h-64 w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                          <div className="absolute bottom-6 left-6 text-left">
+                              <h3 className="text-xl font-bold text-white">{col.name}</h3>
+                              <p className="text-sm text-zinc-300">{col.count} Photos</p>
+                          </div>
+                      </div>
+                  ))}
+              </div>
+          </div>
+      </section>
+
+      {/* About Section */}
+      <AboutSection />
+
+      {/* Footer Section */}
+      <Footer />
+
+      {/* ── Photo Lightbox Modal ── */}
+      {selectedPhoto && (
+        <PhotoLightbox 
+          photo={selectedPhoto} 
+          allPhotos={featuredPhotos}
+          onClose={() => setSelectedPhoto(null)}
+          onNavigate={(p) => setSelectedPhoto(p)}
+        />
+      )}
     </div>
   );
 }

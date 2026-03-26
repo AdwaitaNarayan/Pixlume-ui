@@ -3,12 +3,17 @@
 import { useEffect, useState, useRef } from "react";
 import { getPhotos, searchPhotos, Photo } from "../services/api";
 import PhotoCard from "./PhotoCard";
+import PhotoLightbox from "./PhotoLightbox";
 
-export default function Gallery() {
+interface GalleryProps {
+  initialSearch?: string;
+}
+
+export default function Gallery({ initialSearch = "" }: GalleryProps) {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchTag, setSearchTag] = useState("");
+  const [searchTag, setSearchTag] = useState(initialSearch);
 
   // Autocomplete state
   const [suggestions, setSuggestions] = useState<Photo[]>([]);
@@ -26,6 +31,9 @@ export default function Gallery() {
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const loadingObserverRef = useRef<HTMLDivElement>(null);
+
+  // Lightbox state
+  const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
 
   const loadPhotos = async (
     query: string = searchTag,
@@ -69,7 +77,7 @@ export default function Gallery() {
 
   useEffect(() => {
     // Initial load
-    loadPhotos();
+    loadPhotos(initialSearch);
 
     // Listen for hero search
     const handleHeroSearch = (e: Event) => {
@@ -153,8 +161,7 @@ export default function Gallery() {
   };
 
   const handlePhotoClick = (photo: Photo) => {
-    // Open a modal or full-screen view (coming later)
-    window.open(photo.image_2k_url || photo.image_1080_url || photo.thumbnail_url || "#", "_blank");
+    setSelectedPhoto(photo);
   };
 
   return (
@@ -368,6 +375,16 @@ export default function Gallery() {
             </div>
           )}
         </div>
+      )}
+
+      {/* ── Photo Lightbox Modal ── */}
+      {selectedPhoto && (
+        <PhotoLightbox 
+          photo={selectedPhoto} 
+          allPhotos={photos}
+          onClose={() => setSelectedPhoto(null)}
+          onNavigate={(p) => setSelectedPhoto(p)}
+        />
       )}
     </section>
   );

@@ -35,14 +35,14 @@ export default function PhotoCard({ photo, onClick, enterClass = "card-enter" }:
     <div
       ref={cardRef}
       onClick={() => onClick(photo)}
-      className={`group relative cursor-pointer overflow-hidden rounded-2xl bg-zinc-100 dark:bg-zinc-900
+      className={`group relative cursor-pointer overflow-hidden rounded-2xl
         transition-all duration-500
         hover:shadow-[0_12px_48px_-8px_rgba(6,182,212,0.35)]
         hover:-translate-y-1
         ${enterClass}`}
     >
       {/* ── Image Container ── */}
-      <div className="relative w-full overflow-hidden leading-none min-h-[200px]">
+      <div className="relative w-full overflow-hidden">
 
         {/* Shimmer skeleton – shows only while image loads */}
         {!isLoaded && (
