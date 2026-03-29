@@ -1,7 +1,35 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useInView, useSpring, useTransform } from "framer-motion";
 import { Camera, Zap, Shield, Globe } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+
+function CountUp({ value }: { value: string }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  
+  // Parse number from string (e.g. "12K+" -> 12)
+  const numericValue = parseInt(value) || 0;
+  const suffix = value.replace(/[0-9]/g, '');
+
+  const spring = useSpring(0, {
+    mass: 1,
+    stiffness: 80,
+    damping: 30,
+  });
+
+  const display = useTransform(spring, (current) => 
+    Math.floor(current).toLocaleString() + suffix
+  );
+
+  useEffect(() => {
+    if (isInView) {
+      spring.set(numericValue);
+    }
+  }, [isInView, spring, numericValue]);
+
+  return <motion.span ref={ref}>{display}</motion.span>;
+}
 
 const features = [
   {
@@ -53,11 +81,11 @@ export default function AboutSection() {
             About Pixlume
           </motion.h2>
           <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 30, scale: 0.98, letterSpacing: "-0.01em" }}
+            whileInView={{ opacity: 1, y: 0, scale: 1, letterSpacing: "0em" }}
             viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="mt-2 text-3xl font-bold tracking-tight text-zinc-900 dark:text-white sm:text-4xl"
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
+            className="mt-2 text-3xl font-black tracking-tight text-zinc-900 dark:text-white sm:text-5xl"
           >
             Crafting the Future of Digital Imagery
           </motion.p>
@@ -102,15 +130,24 @@ export default function AboutSection() {
              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-transparent" />
              <div className="relative grid grid-cols-1 gap-y-12 gap-x-8 sm:grid-cols-2 lg:grid-cols-4 text-center">
                  {[
-                     { label: 'High-Res Images', value: '12K+' },
-                     { label: 'Happy Users', value: '50K+' },
-                     { label: 'Total Downloads', value: '1M+' },
+                     { label: 'High-Res Images', value: '12000+' },
+                     { label: 'Happy Users', value: '50000+' },
+                     { label: 'Total Downloads', value: '1000000+' },
                      { label: 'Top Photographers', value: '500+' },
-                 ].map((stat) => (
-                     <div key={stat.label} className="flex flex-col gap-y-2">
-                         <div className="text-4xl font-bold tracking-tight text-white">{stat.value}</div>
-                         <div className="text-sm font-medium text-zinc-400 uppercase tracking-widest">{stat.label}</div>
-                     </div>
+                 ].map((stat, idx) => (
+                     <motion.div 
+                        key={stat.label}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.1 * idx, duration: 0.6 }}
+                        className="flex flex-col gap-y-2 group"
+                     >
+                         <div className="text-4xl font-extrabold tracking-tighter text-white group-hover:scale-110 transition-transform duration-500">
+                            <CountUp value={stat.value} />
+                         </div>
+                         <div className="text-xs font-bold text-zinc-400 uppercase tracking-[0.2em]">{stat.label}</div>
+                     </motion.div>
                  ))}
              </div>
         </div>

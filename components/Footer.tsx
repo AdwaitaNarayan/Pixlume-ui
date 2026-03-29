@@ -65,10 +65,10 @@ export default function Footer() {
             </div>
           </div>
 
-           {/* Links Sections */}
-           {footerLinks.map((section) => (
-             <div key={section.title} className="lg:col-span-3">
-               <h3 className="text-sm font-bold uppercase tracking-widest text-zinc-900 dark:text-white">
+          {/* Links Sections */}
+          {footerLinks.map((section) => (
+            <div key={section.title} className="lg:col-span-3">
+              <h3 className="text-sm font-bold uppercase tracking-widest text-zinc-900 dark:text-white">
                 {section.title}
               </h3>
               <ul className="mt-6 space-y-4">

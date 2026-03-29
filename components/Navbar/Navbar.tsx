@@ -2,13 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Camera, Search, User, Menu, X, Layers } from 'lucide-react';
+import { Camera, Search, User, Menu, X, Layers, Sun, Moon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { usePathname } from 'next/navigation';
 import ThemeToggle from '../ThemeToggle';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -34,58 +36,58 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-14">
           
           {/* ────── LOGO SECTION ────── */}
-          <Link href="/" className="flex items-center space-x-2 group">
+          <Link href="/" className="flex items-center space-x-3 group">
             <div className="relative">
               <motion.div
                 whileHover={{ rotate: -10, scale: 1.1 }}
-                className="relative z-10 p-2 bg-gradient-to-br from-cyan-500 to-indigo-600 rounded-xl shadow-lg shadow-cyan-500/20"
+                className="relative z-10 p-2.5 bg-gradient-to-br from-cyan-500 to-indigo-600 rounded-2xl shadow-xl shadow-cyan-500/30"
               >
-                <Camera className="w-5 h-5 text-white" />
+                <Camera className="w-6 h-6 text-white" />
               </motion.div>
               {/* Backglow for the logo icon */}
-              <div className="absolute inset-0 bg-cyan-400 blur-lg opacity-20 group-hover:opacity-40 transition-opacity rounded-full shadow-cyan-500/50" />
+              <div className="absolute inset-0 bg-cyan-400 blur-xl opacity-30 group-hover:opacity-50 transition-opacity rounded-full shadow-cyan-500/50" />
             </div>
             
             <div className="flex flex-col">
-              <span className="text-xl font-black tracking-tight flex items-center gap-1">
-                <span className="text-zinc-950 dark:text-white transition-colors">Pix</span>
+              <span className="text-2xl font-black tracking-tighter flex items-center gap-1.5 leading-none">
+                <span className="text-zinc-950 dark:text-white">Pix</span>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-indigo-500">lume</span>
               </span>
-              <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-zinc-400 dark:text-zinc-500 -mt-1 leading-none transition-colors">
+              <span className="text-[11px] uppercase tracking-[0.3em] font-black text-zinc-400 dark:text-zinc-500 mt-1 leading-none">
                 Studio
               </span>
             </div>
           </Link>
 
           {/* ────── DESKTOP LINKS ────── */}
-          <div className="hidden md:flex items-center space-x-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className="px-4 py-2 text-sm font-semibold text-zinc-600 dark:text-zinc-400 hover:text-cyan-600 dark:hover:text-white transition-all rounded-lg hover:bg-zinc-100 dark:hover:bg-white/5"
-              >
-                {link.name}
-              </Link>
-            ))}
+          <div className="hidden md:flex items-center space-x-2">
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href || (link.href.includes("#") && pathname === "/");
+              return (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className={`relative px-5 py-2.5 text-sm font-black transition-all rounded-xl hover:bg-zinc-100 dark:hover:bg-white/5 ${
+                    isActive 
+                        ? "text-cyan-600 dark:text-white" 
+                        : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
+                  }`}
+                >
+                  {link.name}
+                  {isActive && (
+                      <motion.div 
+                        layoutId="nav-active" 
+                        className="absolute bottom-1 left-5 right-5 h-1 bg-cyan-600 dark:bg-cyan-500 rounded-full"
+                        style={{ originX: 0.5 }}
+                      />
+                  )}
+                </Link>
+              );
+            })}
           </div>
 
           {/* ────── ACTIONS SECTION ────── */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            {/* User Profile / Admin Link */}
-            <Link 
-              href="/admin" 
-              className="group flex items-center gap-2 px-3 py-2 rounded-xl bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10 hover:border-cyan-500/50 transition-all dark:hover:bg-white/10"
-            >
-              <div className="h-6 w-6 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center group-hover:bg-cyan-500/10 transition-colors overflow-hidden">
-                <User className="w-4 h-4 text-zinc-600 dark:text-zinc-400 group-hover:text-cyan-500 transition-colors" />
-              </div>
-              <span className="hidden sm:inline text-sm font-bold text-zinc-700 dark:text-zinc-300">Admin</span>
-            </Link>
-
-            {/* Separator */}
-            <div className="h-6 w-px bg-zinc-200 dark:bg-white/10 mx-1 hidden sm:block" />
-
+          <div className="flex items-center gap-3">
             {/* Theme Toggle Component */}
             <ThemeToggle />
 

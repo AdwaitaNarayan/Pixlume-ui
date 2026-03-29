@@ -11,6 +11,8 @@ interface PhotoCardProps {
   enterClass?: string; // e.g. "card-enter card-enter-2" for staggered animation
 }
 
+import { motion } from "framer-motion";
+
 export default function PhotoCard({ photo, onClick, enterClass = "card-enter" }: PhotoCardProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
@@ -32,8 +34,12 @@ export default function PhotoCard({ photo, onClick, enterClass = "card-enter" }:
   };
 
   return (
-    <div
+    <motion.div
       ref={cardRef}
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
       onClick={() => onClick(photo)}
       className={`group relative cursor-pointer overflow-hidden rounded-2xl
         transition-all duration-500
@@ -49,19 +55,16 @@ export default function PhotoCard({ photo, onClick, enterClass = "card-enter" }:
           <div className="absolute inset-0 z-0 skeleton-shimmer rounded-2xl" />
         )}
 
-        <Image
+        <img
           src={imageUrl}
           alt={photo.title}
-          width={800}
-          height={600}
-          unoptimized={imageUrl.includes("via.placeholder")}
-          className={`w-full h-auto block object-cover
+          loading="lazy"
+          className={`w-full h-auto block
             transition-all duration-700 ease-out
             ${isLoaded
               ? "opacity-100 group-hover:scale-[1.07] group-hover:brightness-90"
               : "opacity-0 scale-95"
             }`}
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           onLoad={() => setIsLoaded(true)}
         />
 
@@ -190,6 +193,6 @@ export default function PhotoCard({ photo, onClick, enterClass = "card-enter" }:
       <div className="pointer-events-none absolute inset-0 z-40 rounded-2xl ring-0 ring-cyan-400/0
         transition-all duration-400
         group-hover:ring-1 group-hover:ring-cyan-400/30" />
-    </div>
+    </motion.div>
   );
 }

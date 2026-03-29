@@ -50,17 +50,17 @@ export default function Gallery({ initialSearch = "" }: GalleryProps) {
         setLoading(true);
       }
       setError(null);
-      
+
       const data = query || res || date || cat
         ? await searchPhotos(query, pageToLoad, 20, { resolution: res, date, category: cat })
         : await getPhotos(pageToLoad, 20);
-        
+
       if (isFetchMore) {
         setPhotos(prev => [...prev, ...data.results]);
       } else {
         setPhotos(data.results);
       }
-      
+
       setHasMore(data.results.length === 20);
       setPage(pageToLoad);
     } catch (err: any) {
@@ -250,11 +250,10 @@ export default function Gallery({ initialSearch = "" }: GalleryProps) {
               </form>
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className={`flex shrink-0 items-center justify-center rounded-full p-3 transition-all ${
-                  showFilters || resolution || dateRange || category
+                className={`flex shrink-0 items-center justify-center rounded-full p-3 transition-all ${showFilters || resolution || dateRange || category
                     ? "bg-cyan-100 text-cyan-600 dark:bg-cyan-900/40 dark:text-cyan-400"
                     : "border border-zinc-200 bg-white/50 text-zinc-600 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-300 dark:hover:bg-zinc-800"
-                }`}
+                  }`}
                 title="Advanced Filters"
               >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -313,12 +312,15 @@ export default function Gallery({ initialSearch = "" }: GalleryProps) {
         </div>
       </div>
 
-      {/* Grid Section */}
+      {/* Masonry Loading Section */}
       {loading && !loadingMore ? (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 lg:gap-8">
+        <div className="columns-1 gap-6 sm:columns-2 lg:columns-3 xl:columns-4 lg:gap-8 [column-fill:_balance]">
           {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-            <div key={i} className="overflow-hidden rounded-2xl">
-              <div className="skeleton-shimmer aspect-[4/5] rounded-2xl" />
+            <div key={i} className="mb-6 break-inside-avoid lg:mb-8">
+              <div
+                className="skeleton-shimmer w-full rounded-2xl"
+                style={{ height: i % 3 === 0 ? '450px' : i % 2 === 0 ? '320px' : '400px' }}
+              />
             </div>
           ))}
         </div>
@@ -340,7 +342,7 @@ export default function Gallery({ initialSearch = "" }: GalleryProps) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
           <p className="text-xl text-zinc-500">No photos found matching your search.</p>
-          <button 
+          <button
             onClick={clearSearch}
             className="mt-4 text-sm font-semibold text-cyan-600 hover:text-cyan-500 dark:text-cyan-400"
           >
@@ -379,8 +381,8 @@ export default function Gallery({ initialSearch = "" }: GalleryProps) {
 
       {/* ── Photo Lightbox Modal ── */}
       {selectedPhoto && (
-        <PhotoLightbox 
-          photo={selectedPhoto} 
+        <PhotoLightbox
+          photo={selectedPhoto}
           allPhotos={photos}
           onClose={() => setSelectedPhoto(null)}
           onNavigate={(p) => setSelectedPhoto(p)}
