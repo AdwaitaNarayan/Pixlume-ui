@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X, Heart, Download, ChevronLeft, ChevronRight,
-  Share2, Info, Waves, ArrowRight
+  Share2, Info, Waves, ArrowRight, Monitor
 } from "lucide-react";
 import Image from "next/image";
 import { Photo } from "../services/api";
@@ -19,6 +19,8 @@ interface PhotoLightboxProps {
 export default function PhotoLightbox({ photo, allPhotos = [], onClose, onNavigate }: PhotoLightboxProps) {
   const [isFavorited, setIsFavorited] = useState(false);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const [showWallpaperPreview, setShowWallpaperPreview] = useState(false);
+  const [showDownloadMenu, setShowDownloadMenu] = useState(false);
 
   // Keyboard navigation
   useEffect(() => {
@@ -127,6 +129,35 @@ export default function PhotoLightbox({ photo, allPhotos = [], onClose, onNaviga
                     priority
                   />
                 )}
+                
+                {/* ── Wallpaper Preview Overlay ── */}
+                <AnimatePresence>
+                  {showWallpaperPreview && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 1.05 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 1.05 }}
+                      onClick={() => setShowWallpaperPreview(false)}
+                      className="absolute inset-0 z-20 flex flex-col items-center justify-center p-8 bg-black/60 backdrop-blur-md cursor-pointer"
+                    >
+                      {/* Mock Desktop Frame */}
+                      <div className="relative aspect-video w-full max-w-4xl overflow-hidden rounded-xl border-[4px] border-zinc-800 bg-zinc-900 shadow-[0_32px_128px_-16px_rgba(0,0,0,0.8)] pointer-events-none">
+                        <Image src={highResUrl || ""} fill className="object-cover" alt="Wallpaper Preview" />
+                        
+                        {/* Desktop Elements */}
+                        <div className="absolute bottom-0 left-0 right-0 h-8 bg-black/50 backdrop-blur-xl flex items-center justify-center px-4 gap-3 border-t border-white/10">
+                           <div className="flex gap-2">
+                             <div className="h-4 w-4 rounded-sm bg-white/30" />
+                             <div className="h-4 w-4 rounded-sm bg-white/20" />
+                             <div className="h-4 w-4 rounded-sm bg-white/20" />
+                           </div>
+                        </div>
+                      </div>
+                      <p className="mt-6 text-xs font-bold tracking-[0.2em] text-cyan-400 uppercase drop-shadow-lg">Click anywhere to close preview</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
               </div>
 
@@ -186,20 +217,61 @@ export default function PhotoLightbox({ photo, allPhotos = [], onClose, onNaviga
                 </div>
 
                 {/* Action Buttons (Side by Side) */}
-                <div className="flex gap-4 mb-14 relative">
+                <div className="flex gap-4 mb-14 relative z-50">
+                  <div className="flex-[2] relative">
+                    <button 
+                      onClick={() => setShowDownloadMenu(!showDownloadMenu)}
+                      className="w-full h-full bg-gradient-to-r from-primary to-[#00B8CC] text-background-dark px-8 py-5 rounded-xl font-headline text-sm font-extrabold flex items-center justify-center gap-3 hover:shadow-[0_15px_40px_rgba(0,229,255,0.25)] transition-all transform hover:-translate-y-1"
+                    >
+                      <Download className="h-5 w-5 font-bold" />
+                      <span>Download</span>
+                    </button>
+
+                    {/* Download Menu */}
+                    <AnimatePresence>
+                      {showDownloadMenu && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                          className="absolute bottom-full left-0 right-0 mb-4 overflow-hidden rounded-3xl border border-white/10 bg-surface shadow-[0_32px_128px_-16px_rgba(0,0,0,0.8)] backdrop-blur-xl z-[100]"
+                        >
+                          <div className="px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/60 border-b border-white/10">Select Resolution</div>
+                          <div className="flex flex-col">
+                            {[
+                              { key: 'image_8k_url', label: '8K Master', size: '7680 × 4320' },
+                              { key: 'image_4k_url', label: '4K Ultra HD', size: '3840 × 2160' },
+                              { key: 'image_2k_url', label: '2K QHD', size: '2560 × 1440' },
+                              { key: 'image_1080_url', label: '1080p Full HD', size: '1920 × 1080' },
+                            ].map((opt) => (
+                              (photo as any)[opt.key] && (
+                                <button
+                                  key={opt.key}
+                                  onClick={() => {
+                                    handleDownload((photo as any)[opt.key], opt.label);
+                                    setShowDownloadMenu(false);
+                                  }}
+                                  className="group flex w-full items-center justify-between px-6 py-4 text-left hover:bg-surface-container-high transition-colors border-b border-white/5 last:border-0"
+                                >
+                                  <div className="flex flex-col">
+                                    <span className="text-sm font-bold text-on-surface group-hover:text-primary transition-colors">{opt.label}</span>
+                                    <span className="text-[10px] text-on-surface-variant font-medium tracking-tight mb-0">{opt.size}</span>
+                                  </div>
+                                  <Download className="h-4 w-4 text-on-surface-variant group-hover:text-primary transition-colors" />
+                                </button>
+                              )
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
                   <button 
-                    onClick={() => handleDownload()}
-                    className="flex-[2] bg-gradient-to-r from-primary to-[#00B8CC] text-background-dark px-8 py-5 rounded-xl font-headline text-sm font-extrabold flex items-center justify-center gap-3 hover:shadow-[0_15px_40px_rgba(0,229,255,0.25)] transition-all transform hover:-translate-y-1"
+                    onClick={() => setShowWallpaperPreview(true)}
+                    className={`flex-1 bg-surface-container text-on-surface border-outline-variant/20 hover:bg-surface-bright border px-8 py-5 rounded-xl font-headline text-sm font-bold flex items-center justify-center gap-3 transition-all group`}
                   >
-                    <Download className="h-5 w-5 font-bold" />
-                    <span>Download</span>
-                  </button>
-                  <button 
-                    onClick={() => setIsFavorited(!isFavorited)}
-                    className={`flex-1 ${isFavorited ? 'bg-error-dim/20 text-error-dim border-error-dim/50' : 'bg-surface-container text-on-surface border-outline-variant/20 hover:bg-surface-bright'} border px-8 py-5 rounded-xl font-headline text-sm font-bold flex items-center justify-center gap-3 transition-all group`}
-                  >
-                    <Heart className={`h-5 w-5 transition-transform group-hover:scale-110 ${isFavorited ? 'fill-current text-error border-transparent' : 'text-primary'}`} />
-                    <span>{isFavorited ? 'Liked' : 'Like'}</span>
+                    <Monitor className="h-5 w-5 transition-transform group-hover:scale-110 text-primary" />
+                    <span>Preview</span>
                   </button>
                 </div>
 
