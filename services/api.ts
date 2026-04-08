@@ -41,8 +41,17 @@ export interface PhotoListResponse {
 // ---------------------------------------------------------------------------
 // Axios instance
 // ---------------------------------------------------------------------------
+// In production, use the relative /api path so requests are proxied
+// server-side by Next.js rewrites — this avoids Mixed Content errors
+// because the browser only ever talks to the same HTTPS origin.
+// In local dev, fall back to the direct backend URL.
+const isProduction = process.env.NODE_ENV === 'production';
+const baseURL = isProduction
+  ? '/api'
+  : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000');
+
 const axiosClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
+  baseURL,
   headers: {
     'Content-Type': 'application/json',
   },
