@@ -5,7 +5,10 @@
 import axios from 'axios';
 import { Photo } from './api';
 
-const BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const isProduction = process.env.NODE_ENV === 'production';
+const BASE = isProduction
+  ? '/api'
+  : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000');
 
 // ── Token storage ────────────────────────────────────────────────────────────
 export function saveToken(token: string) {
