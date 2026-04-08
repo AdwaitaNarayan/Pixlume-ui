@@ -69,7 +69,7 @@ export async function getPhotos(
   page = 1,
   pageSize = 20
 ): Promise<PhotoListResponse> {
-  const { data } = await axiosClient.get<PhotoListResponse>('/photos', {
+  const { data } = await axiosClient.get<PhotoListResponse>('/photos/', {
     params: { page, page_size: pageSize },
   });
   return data;

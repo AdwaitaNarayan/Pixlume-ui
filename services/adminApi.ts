@@ -72,7 +72,7 @@ export async function adminDeletePhoto(token: string, photoId: string): Promise<
 }
 
 export async function adminGetPhotos(page = 1, pageSize = 20) {
-  const { data } = await axios.get(`${BASE}/photos`, {
+  const { data } = await axios.get(`${BASE}/photos/`, {
     params: { page, page_size: pageSize },
   });
   return data;
