@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "../../components/ThemeProvider";
-import ThemeToggle from "../../components/ThemeToggle";
-
-import Navbar from "../../components/Navbar/Navbar";
+import ClientLayout from "../../components/ClientLayout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,16 +25,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-zinc-950 transition-colors duration-300`}
+      <head>
+        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+      </head>
+      <ClientLayout
+        geistSansVariable={geistSans.variable}
+        geistMonoVariable={geistMono.variable}
       >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <Navbar />
-          <main className="pt-20">
-            {children}
-          </main>
-        </ThemeProvider>
-      </body>
+        {children}
+      </ClientLayout>
     </html>
   );
 }

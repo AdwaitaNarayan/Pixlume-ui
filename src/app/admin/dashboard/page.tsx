@@ -8,16 +8,17 @@ import {
   adminUploadPhoto, adminDeletePhoto, adminGetPhotos,
 } from "../../../../services/adminApi";
 import { Photo } from "../../../../services/api";
+import ThemeToggle from "../../../../components/ThemeToggle";
 
 // ── Stat card ──────────────────────────────────────────────────────────────
 function StatCard({ label, value, icon, color }: { label: string; value: string | number; icon: React.ReactNode; color: string }) {
   return (
-    <div className={`rounded-2xl border bg-white/5 backdrop-blur-sm p-5 border-white/10 flex items-center gap-4`}>
+    <div className={`rounded-2xl border bg-white dark:bg-white/5 backdrop-blur-sm p-5 border-zinc-200 dark:border-white/10 flex items-center gap-4 shadow-sm dark:shadow-none`}>
       <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${color}`}>
         {icon}
       </div>
       <div>
-        <p className="text-2xl font-bold text-white">{value}</p>
+        <p className="text-2xl font-bold text-zinc-900 dark:text-white">{value}</p>
         <p className="text-xs font-medium text-zinc-500">{label}</p>
       </div>
     </div>
@@ -67,9 +68,9 @@ function UploadPanel({ token, onSuccess }: { token: string; onSuccess: (p: Photo
   };
 
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm">
-      <h2 className="mb-5 text-lg font-bold text-white flex items-center gap-2">
-        <svg className="h-5 w-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+    <div className="rounded-3xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 p-6 backdrop-blur-sm shadow-sm dark:shadow-none">
+      <h2 className="mb-5 text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+        <svg className="h-5 w-5 text-cyan-500 dark:text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
         Upload New Photo
       </h2>
 
@@ -118,7 +119,7 @@ function UploadPanel({ token, onSuccess }: { token: string; onSuccess: (p: Photo
               onChange={(e) => set(e.target.value)}
               placeholder={placeholder}
               required={id === "title"}
-              className="rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-zinc-600 outline-none transition-all focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20"
+              className="rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 px-4 py-3 text-sm text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none transition-all focus:border-cyan-500/50 focus:ring-4 focus:ring-cyan-500/10"
             />
           </div>
         ))}
@@ -126,7 +127,7 @@ function UploadPanel({ token, onSuccess }: { token: string; onSuccess: (p: Photo
         <button
           type="submit"
           disabled={uploading || !file || !title.trim()}
-          className="mt-2 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 py-3 text-sm font-bold text-white shadow-lg shadow-cyan-500/20 transition-all hover:from-cyan-400 hover:to-blue-500 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+          className="mt-2 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-700 py-3 text-sm font-bold text-white shadow-lg shadow-cyan-500/20 transition-all hover:from-cyan-500 hover:to-blue-600 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {uploading ? (
             <>
@@ -195,20 +196,20 @@ export default function AdminDashboard() {
   ] as const;
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 transition-colors duration-300">
       {/* ── Sidebar ── */}
-      <aside className="fixed left-0 top-0 z-40 flex h-full w-64 flex-col border-r border-white/10 bg-zinc-900/80 backdrop-blur-xl">
+      <aside className="fixed left-0 top-0 z-40 flex h-full w-64 flex-col border-r border-zinc-200 dark:border-white/10 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl transition-colors duration-300">
         {/* Logo */}
-        <div className="flex items-center gap-3 border-b border-white/10 px-6 py-5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 shadow-lg shadow-cyan-500/20">
+        <div className="flex items-center gap-3 border-b border-zinc-100 dark:border-white/10 px-6 py-5">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 shadow-lg shadow-cyan-500/20">
             <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
           </div>
           <div>
-            <p className="text-sm font-bold text-white">Pixlume</p>
-            <p className="text-[10px] font-medium uppercase tracking-widest text-cyan-500">Admin Panel</p>
+            <p className="text-sm font-bold text-zinc-900 dark:text-white">Pixlume</p>
+            <p className="text-[10px] font-medium uppercase tracking-widest text-cyan-600 dark:text-cyan-500">Admin Panel</p>
           </div>
         </div>
 
@@ -220,8 +221,8 @@ export default function AdminDashboard() {
               onClick={() => setActiveTab(tab.key)}
               className={`flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-all
                 ${activeTab === tab.key
-                  ? "bg-cyan-500/15 text-cyan-400 shadow-sm"
-                  : "text-zinc-500 hover:bg-white/5 hover:text-zinc-200"
+                  ? "bg-cyan-500/10 text-cyan-600 dark:bg-cyan-500/15 dark:text-cyan-400 shadow-sm"
+                  : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-zinc-200"
                 }`}
             >
               {tab.icon}
@@ -231,45 +232,49 @@ export default function AdminDashboard() {
         </nav>
 
         {/* User + logout */}
-        <div className="border-t border-white/10 px-4 py-4">
-          <div className="flex items-center gap-3 rounded-xl bg-white/5 px-3 py-3">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 text-xs font-bold text-white">
+        <div className="border-t border-zinc-100 dark:border-white/10 px-4 py-4 mt-auto">
+          <div className="flex items-center gap-3 rounded-xl bg-zinc-50 dark:bg-white/5 px-3 py-3 border border-zinc-200/50 dark:border-white/5">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-indigo-500 text-xs font-bold text-white shadow-sm">
               {adminUser?.email?.[0]?.toUpperCase() || "A"}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="truncate text-xs font-semibold text-zinc-200">{adminUser?.email || "Admin"}</p>
-              <p className="text-[10px] text-zinc-600">Administrator</p>
+              <p className="truncate text-xs font-semibold text-zinc-900 dark:text-zinc-200">{adminUser?.email || "Admin"}</p>
+              <p className="text-[10px] text-zinc-500 font-medium tracking-tight">Administrator</p>
             </div>
-            <button onClick={handleLogout} title="Logout" className="text-zinc-600 hover:text-red-400 transition-colors">
+            <button onClick={handleLogout} title="Logout" className="text-zinc-400 hover:text-red-500 transition-colors">
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
             </button>
           </div>
-          <a href="/" className="mt-2 flex items-center gap-2 rounded-xl px-3 py-2 text-xs text-zinc-600 hover:text-zinc-300 transition-colors">
-            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-            Back to Site
-          </a>
         </div>
       </aside>
 
       {/* ── Main content ── */}
       <main className="pl-64 min-h-screen">
         {/* Header */}
-        <header className="sticky top-0 z-30 flex items-center justify-between border-b border-white/10 bg-zinc-950/80 px-8 py-4 backdrop-blur-xl">
+        <header className="sticky top-0 z-30 flex items-center justify-between border-b border-zinc-200 dark:border-white/10 bg-white/80 dark:bg-zinc-950/80 px-8 py-4 backdrop-blur-xl transition-all">
           <div>
-            <h1 className="text-xl font-bold text-white capitalize">
+            <h1 className="text-xl font-bold text-zinc-900 dark:text-white capitalize">
               {activeTab === "overview" ? "Dashboard Overview" : activeTab === "upload" ? "Upload Photo" : "Manage Photos"}
             </h1>
-            <p className="text-xs text-zinc-600">Pixlume Admin · {new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</p>
+            <p className="text-xs text-zinc-500">Pixlume Admin · {new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</p>
           </div>
-          <button
-            onClick={() => setActiveTab("upload")}
-            className="flex items-center gap-2 rounded-xl bg-cyan-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-cyan-500 active:scale-95"
-          >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4"/></svg>
-            New Upload
-          </button>
+          <div className="flex items-center gap-4">
+            <a href="/" className="flex items-center gap-2 rounded-xl bg-zinc-100 dark:bg-white/5 px-4 py-2 text-xs font-bold text-zinc-600 dark:text-zinc-400 transition-all hover:bg-zinc-200 dark:hover:bg-white/10">
+              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+              View Site
+            </a>
+            <div className="h-6 w-px bg-zinc-200 dark:bg-white/10 mx-1" />
+            <ThemeToggle />
+            <button
+              onClick={() => setActiveTab("upload")}
+              className="flex items-center gap-2 rounded-xl bg-cyan-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-cyan-500 active:scale-95 shadow-lg shadow-cyan-600/20"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4"/></svg>
+              New Upload
+            </button>
+          </div>
         </header>
 
         <div className="p-8">
@@ -293,14 +298,14 @@ export default function AdminDashboard() {
               </div>
 
               {/* Recent photos preview */}
-              <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+              <div className="rounded-3xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 p-6 shadow-sm dark:shadow-none transition-all">
                 <div className="mb-4 flex items-center justify-between">
-                  <h2 className="font-bold text-white">Recent Photos</h2>
-                  <button onClick={() => setActiveTab("photos")} className="text-xs text-cyan-400 hover:text-cyan-300">View all →</button>
+                  <h2 className="font-bold text-zinc-900 dark:text-white">Recent Photos</h2>
+                  <button onClick={() => setActiveTab("photos")} className="text-xs text-cyan-600 dark:text-cyan-400 hover:text-cyan-500 dark:hover:text-cyan-300">View all →</button>
                 </div>
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6">
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6 transition-all">
                   {photos.slice(0, 6).map((photo) => (
-                    <div key={photo.id} className="group relative aspect-square overflow-hidden rounded-xl bg-zinc-800">
+                    <div key={photo.id} className="group relative aspect-square overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800">
                       {photo.thumbnail_url && (
                         <Image src={photo.thumbnail_url} alt={photo.title} fill className="object-cover transition-transform duration-500 group-hover:scale-110" unoptimized />
                       )}
@@ -343,15 +348,15 @@ export default function AdminDashboard() {
               ) : (
                 <>
                   <p className="mb-4 text-sm text-zinc-500">{total} total photos · Page {page}</p>
-                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 transition-all">
                     {photos.map((photo) => (
-                      <div key={photo.id} className="group relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/5">
+                      <div key={photo.id} className="group relative overflow-hidden rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 shadow-sm dark:shadow-none">
                         <div className="relative aspect-square">
                           {photo.thumbnail_url ? (
                             <Image src={photo.thumbnail_url} alt={photo.title} fill className="object-cover transition-transform duration-500 group-hover:scale-110" unoptimized />
                           ) : (
-                            <div className="flex h-full items-center justify-center bg-zinc-800">
-                              <svg className="h-8 w-8 text-zinc-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            <div className="flex h-full items-center justify-center bg-zinc-100 dark:bg-zinc-800">
+                              <svg className="h-8 w-8 text-zinc-300 dark:text-zinc-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                             </div>
                           )}
                           {/* Overlay */}
@@ -370,12 +375,12 @@ export default function AdminDashboard() {
                             </button>
                           </div>
                           {photo.image_4k_url && (
-                            <span className="absolute top-2 left-2 rounded-full bg-black/60 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-cyan-300 backdrop-blur-sm">4K</span>
+                            <span className="absolute top-2 left-2 rounded-full bg-cyan-600/90 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-white backdrop-blur-sm shadow-sm">4K</span>
                           )}
                         </div>
                         <div className="p-3">
-                          <p className="truncate text-xs font-semibold text-zinc-200">{photo.title}</p>
-                          <p className="mt-0.5 text-[10px] text-zinc-600">{photo.downloads || 0} downloads · {new Date(photo.created_at).toLocaleDateString()}</p>
+                          <p className="truncate text-xs font-semibold text-zinc-900 dark:text-zinc-200">{photo.title}</p>
+                          <p className="mt-0.5 text-[10px] text-zinc-500 dark:text-zinc-600 font-medium">{photo.downloads || 0} downloads · {new Date(photo.created_at).toLocaleDateString()}</p>
                         </div>
                       </div>
                     ))}
@@ -386,13 +391,13 @@ export default function AdminDashboard() {
                     <button
                       disabled={page <= 1 || loadingPhotos}
                       onClick={() => token && loadPhotos(token, page - 1)}
-                      className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-zinc-400 transition-all hover:bg-white/10 disabled:opacity-40"
+                      className="rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 px-4 py-2 text-sm text-zinc-600 dark:text-zinc-400 font-medium transition-all hover:bg-zinc-50 dark:hover:bg-white/10 disabled:opacity-40"
                     >← Prev</button>
-                    <span className="text-sm text-zinc-600">Page {page}</span>
+                    <span className="text-sm text-zinc-500 font-medium">Page {page}</span>
                     <button
                       disabled={photos.length < 20 || loadingPhotos}
                       onClick={() => token && loadPhotos(token, page + 1)}
-                      className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-zinc-400 transition-all hover:bg-white/10 disabled:opacity-40"
+                      className="rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 px-4 py-2 text-sm text-zinc-600 dark:text-zinc-400 font-medium transition-all hover:bg-zinc-50 dark:hover:bg-white/10 disabled:opacity-40"
                     >Next →</button>
                   </div>
                 </>

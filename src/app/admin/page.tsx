@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { adminLogin, saveToken, isLoggedIn } from "../../../services/adminApi";
+import ThemeToggle from "../../../components/ThemeToggle";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -37,18 +38,22 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-zinc-950">
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white dark:bg-zinc-950 transition-colors duration-300">
+      {/* Theme Toggle for Admin Login */}
+      <div className="absolute top-6 right-6 z-50">
+        <ThemeToggle />
+      </div>
 
       {/* ── Animated background blobs ── */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -left-40 h-[600px] w-[600px] rounded-full bg-cyan-600/10 blur-[120px] animate-pulse" />
-        <div className="absolute -bottom-32 -right-32 h-[500px] w-[500px] rounded-full bg-violet-600/10 blur-[100px] animate-pulse" style={{ animationDelay: "1.5s" }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[300px] w-[300px] rounded-full bg-cyan-500/5 blur-[80px]" />
+        <div className="absolute -top-40 -left-40 h-[600px] w-[600px] rounded-full bg-cyan-600/10 dark:bg-cyan-600/10 blur-[120px] animate-pulse" />
+        <div className="absolute -bottom-32 -right-32 h-[500px] w-[500px] rounded-full bg-violet-600/10 dark:bg-violet-600/10 blur-[100px] animate-pulse" style={{ animationDelay: "1.5s" }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[300px] w-[300px] rounded-full bg-cyan-500/5 dark:bg-cyan-500/5 blur-[80px]" />
         {/* Dot grid */}
         <div
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0 opacity-[0.05] dark:opacity-[0.03]"
           style={{
-            backgroundImage: "radial-gradient(circle, #ffffff 1px, transparent 1px)",
+            backgroundImage: "radial-gradient(circle, currentColor 1px, transparent 1px)",
             backgroundSize: "28px 28px",
           }}
         />
@@ -64,12 +69,12 @@ export default function AdminLoginPage() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-white">Pixlume Admin</h1>
-          <p className="mt-1 text-sm text-zinc-500">Sign in to manage your photo library</p>
+          <h1 className="text-2xl font-bold text-zinc-900 dark:text-white transition-colors">Pixlume Admin</h1>
+          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-500">Sign in to manage your photo library</p>
         </div>
 
         {/* Form card */}
-        <div className="rounded-3xl border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur-xl">
+        <div className="rounded-3xl border border-zinc-200 dark:border-white/10 bg-white/70 dark:bg-white/5 p-8 shadow-2xl shadow-zinc-200/50 dark:shadow-none backdrop-blur-xl transition-all duration-300">
           {error && (
             <div className="mb-6 flex items-start gap-3 rounded-2xl border border-red-500/20 bg-red-500/10 p-4">
               <svg className="mt-0.5 h-5 w-5 shrink-0 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -82,7 +87,7 @@ export default function AdminLoginPage() {
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
             {/* Email */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold uppercase tracking-widest text-zinc-500">
+              <label className="text-xs font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-500">
                 Email Address
               </label>
               <div className="relative">
@@ -97,14 +102,14 @@ export default function AdminLoginPage() {
                   required
                   autoComplete="email"
                   placeholder="admin@pixlume.com"
-                  className="w-full rounded-xl border border-white/10 bg-white/5 py-3 pl-11 pr-4 text-sm text-white placeholder-zinc-600 outline-none transition-all focus:border-cyan-500/50 focus:bg-white/8 focus:ring-2 focus:ring-cyan-500/20"
+                  className="w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 py-3.5 pl-11 pr-4 text-sm text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none transition-all focus:border-cyan-500/50 focus:ring-4 focus:ring-cyan-500/10"
                 />
               </div>
             </div>
 
             {/* Password */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold uppercase tracking-widest text-zinc-500">
+              <label className="text-xs font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-500">
                 Password
               </label>
               <div className="relative">
@@ -119,7 +124,7 @@ export default function AdminLoginPage() {
                   required
                   autoComplete="current-password"
                   placeholder="••••••••"
-                  className="w-full rounded-xl border border-white/10 bg-white/5 py-3 pl-11 pr-12 text-sm text-white placeholder-zinc-600 outline-none transition-all focus:border-cyan-500/50 focus:bg-white/8 focus:ring-2 focus:ring-cyan-500/20"
+                  className="w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 py-3.5 pl-11 pr-12 text-sm text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none transition-all focus:border-cyan-500/50 focus:ring-4 focus:ring-cyan-500/10"
                 />
                 <button
                   type="button"
@@ -167,9 +172,9 @@ export default function AdminLoginPage() {
         </div>
 
         {/* Footer link */}
-        <p className="mt-6 text-center text-xs text-zinc-600">
+        <p className="mt-6 text-center text-xs text-zinc-500 dark:text-zinc-600">
           &larr;{" "}
-          <a href="/" className="text-cyan-500 hover:text-cyan-400 transition-colors">
+          <a href="/" className="text-cyan-600 dark:text-cyan-500 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors">
             Back to Pixlume
           </a>
         </p>
