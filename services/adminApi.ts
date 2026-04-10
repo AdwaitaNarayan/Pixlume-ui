@@ -7,7 +7,7 @@ import { Photo } from './api';
 
 const isProduction = process.env.NODE_ENV === 'production';
 const BASE = isProduction
-  ? '/api'
+  ? 'https://api.pixlume.online'
   : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000');
 
 // ── Token storage ────────────────────────────────────────────────────────────
