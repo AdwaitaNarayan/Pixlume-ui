@@ -31,9 +31,10 @@ function UploadPanel({ token, onSuccess }: { token: string; onSuccess: (p: Photo
   const [existingCategories, setExistingCategories] = useState<string[]>([]);
   const [caption, setCaption] = useState("");
   const [tags, setTags] = useState("");
-  const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -53,29 +54,50 @@ function UploadPanel({ token, onSuccess }: { token: string; onSuccess: (p: Photo
     }
   };
 
-  const handleFile = (f: File) => {
-    setFile(f);
-    setPreview(URL.createObjectURL(f));
+  const handleFiles = (newFiles: FileList | File[]) => {
+    const valid = Array.from(newFiles).filter(f => f.type.startsWith("image/"));
+    setFiles(prev => [...prev, ...valid]);
+    setPreviews(prev => [...prev, ...valid.map(f => URL.createObjectURL(f))]);
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
-    const f = e.dataTransfer.files[0];
-    if (f) handleFile(f);
+    if (e.dataTransfer.files?.length) {
+      handleFiles(e.dataTransfer.files);
+    }
+  };
+
+  const removeFile = (index: number) => {
+    setFiles(prev => prev.filter((_, i) => i !== index));
+    setPreviews(prev => {
+       const newP = [...prev];
+       URL.revokeObjectURL(newP[index]);
+       newP.splice(index, 1);
+       return newP;
+    });
   };
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!file || !categories.trim()) return;
+    if (files.length === 0 || !categories.trim()) return;
     setError(null);
     setUploading(true);
     setSuccess(false);
+    setUploadProgress({ current: 0, total: files.length });
+
     try {
-      const photo = await adminUploadPhoto(token, { categories: categories.trim(), caption, tags, file });
-      onSuccess(photo);
+      let uploadedCount = 0;
+      for (const file of files) {
+        setUploadProgress(prev => ({ ...prev, current: uploadedCount + 1 }));
+        const photo = await adminUploadPhoto(token, { categories: categories.trim(), caption, tags, file });
+        onSuccess(photo);
+        uploadedCount++;
+      }
       setSuccess(true);
-      setCategories(""); setCaption(""); setTags(""); setFile(null); setPreview(null);
-      // add to existing logic to dynamically add new category to pills
+      setCategories(""); setCaption(""); setTags(""); 
+      setFiles([]); 
+      setPreviews(prev => { prev.forEach(p => URL.revokeObjectURL(p)); return []; });
+
       let newCats = categories.split(",").map((c) => c.trim()).filter(Boolean);
       setExistingCategories((prev) => Array.from(new Set([...prev, ...newCats])));
 
@@ -84,6 +106,7 @@ function UploadPanel({ token, onSuccess }: { token: string; onSuccess: (p: Photo
       setError(err?.response?.data?.detail || "Upload failed. Check the server.");
     } finally {
       setUploading(false);
+      setUploadProgress({ current: 0, total: 0 });
     }
   };
 
@@ -110,19 +133,27 @@ function UploadPanel({ token, onSuccess }: { token: string; onSuccess: (p: Photo
           onDrop={handleDrop}
           onDragOver={(e) => e.preventDefault()}
           onClick={() => inputRef.current?.click()}
-          className="relative flex h-40 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-white/15 bg-white/3 transition-all hover:border-cyan-500/50 hover:bg-cyan-500/5"
+          className="relative flex h-32 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-white/15 bg-white/3 transition-all hover:border-cyan-500/50 hover:bg-cyan-500/5"
         >
-          {preview ? (
-            <img src={preview} alt="preview" className="h-full w-full rounded-2xl object-cover" />
-          ) : (
-            <>
-              <svg className="mb-2 h-10 w-10 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-              <p className="text-sm text-zinc-500">Drop image here or <span className="text-cyan-400">click to browse</span></p>
-              <p className="mt-1 text-xs text-zinc-600">JPEG, PNG or WebP</p>
-            </>
-          )}
-          <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} />
+          <svg className="mb-2 h-8 w-8 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+          <p className="text-sm text-zinc-500">Drop images/folder here or <span className="text-cyan-400">browse</span></p>
+          <p className="mt-1 text-[10px] text-zinc-500 font-medium uppercase tracking-widest">{files.length > 0 ? `${files.length} selected` : 'JPEG, PNG or WebP'}</p>
+          <input ref={inputRef} type="file" multiple accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => e.target.files?.length && handleFiles(e.target.files)} />
         </div>
+
+        {/* Thumbnail Preview Grid */}
+        {previews.length > 0 && (
+          <div className="flex flex-wrap gap-2 max-h-[140px] overflow-y-auto custom-scrollbar pr-1">
+            {previews.map((p, i) => (
+              <div key={i} className="relative w-14 h-14 rounded-xl overflow-hidden border border-zinc-200 dark:border-white/10 group shadow-sm shrink-0">
+                <img src={p} alt="preview" className="w-full h-full object-cover" />
+                <button type="button" onClick={() => removeFile(i)} className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 active:scale-95">
+                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Fields */}
         {[
@@ -172,15 +203,15 @@ function UploadPanel({ token, onSuccess }: { token: string; onSuccess: (p: Photo
 
         <button
           type="submit"
-          disabled={uploading || !file || !categories.trim()}
+          disabled={uploading || files.length === 0 || !categories.trim()}
           className="mt-2 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-700 py-3 text-sm font-bold text-white shadow-lg shadow-cyan-500/20 transition-all hover:from-cyan-500 hover:to-blue-600 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {uploading ? (
             <>
               <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-              Uploading & Processing…
+              {uploadProgress.total > 1 ? `Uploading ${uploadProgress.current} of ${uploadProgress.total}…` : `Uploading & Processing…`}
             </>
-          ) : "Upload Photo"}
+          ) : `Upload ${files.length > 1 ? `${files.length} Photos` : 'Photo'}`}
         </button>
       </form>
     </div>
