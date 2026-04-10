@@ -22,7 +22,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "http://13.206.97.212:8000/:path*",
+        destination: "https://api.pixlume.online/:path*",
       },
     ];
   },
