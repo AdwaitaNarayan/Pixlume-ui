@@ -51,10 +51,10 @@ export async function getAdminMe(token: string) {
 // ── Photos ────────────────────────────────────────────────────────────────────
 export async function adminUploadPhoto(
   token: string,
-  payload: { title: string; caption?: string; tags?: string; file: File }
+  payload: { categories: string; caption?: string; tags?: string; file: File }
 ): Promise<Photo> {
   const form = new FormData();
-  form.append('title', payload.title);
+  form.append('categories', payload.categories);
   if (payload.caption) form.append('caption', payload.caption);
   if (payload.tags) form.append('tags', payload.tags);
   form.append('file', payload.file);

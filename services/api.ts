@@ -19,7 +19,7 @@ import axios from 'axios';
 // ---------------------------------------------------------------------------
 export interface Photo {
   id: string;
-  title: string;
+  categories: string[];
   caption: string | null;
   tags: string[] | null;
   thumbnail_url: string | null;
@@ -104,6 +104,14 @@ export async function searchPhotos(
   return data;
 }
 
+/**
+ * Fetch all unique categories from the database.
+ */
+export async function getCategories(): Promise<string[]> {
+  const { data } = await axiosClient.get<string[]>('/photos/categories');
+  return data;
+}
+
 // ---------------------------------------------------------------------------
 // Compatibility export used by existing gallery components
 // ---------------------------------------------------------------------------
@@ -111,6 +119,7 @@ export const galleryService = {
   getPhotos,
   getPhotoById,
   searchPhotos,
+  getCategories,
 };
 
 export default axiosClient;

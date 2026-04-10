@@ -57,7 +57,7 @@ export default function PhotoCard({ photo, onClick, enterClass = "card-enter" }:
 
         <img
           src={imageUrl}
-          alt={photo.title}
+          alt={photo.categories?.join(", ") || "Photo"}
           loading="lazy"
           className={`w-full h-auto block
             transition-all duration-700 ease-out
@@ -138,7 +138,7 @@ export default function PhotoCard({ photo, onClick, enterClass = "card-enter" }:
                 }
                 const link = document.createElement("a");
                 link.href = finalUrl;
-                link.download = `${photo.title || "pixlume-photo"}.jpg`;
+                link.download = `${photo.categories ? photo.categories.join("_") : "pixlume-photo"}.jpg`;
                 link.target = "_blank";
                 document.body.appendChild(link);
                 link.click();
@@ -170,7 +170,7 @@ export default function PhotoCard({ photo, onClick, enterClass = "card-enter" }:
           pointer-events-none"
       >
         <h3 className="text-base font-bold leading-tight text-white drop-shadow-md line-clamp-1">
-          {photo.title}
+          {photo.categories?.join(", ") || "Untitled"}
         </h3>
 
         {photo.tags && photo.tags.length > 0 && (

@@ -27,43 +27,86 @@ function StatCard({ label, value, icon, color }: { label: string; value: string 
 
 // ── Upload panel ───────────────────────────────────────────────────────────
 function UploadPanel({ token, onSuccess }: { token: string; onSuccess: (p: Photo) => void }) {
-  const [title, setTitle] = useState("");
+  const [categories, setCategories] = useState("");
+  const [existingCategories, setExistingCategories] = useState<string[]>([]);
   const [caption, setCaption] = useState("");
   const [tags, setTags] = useState("");
-  const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleFile = (f: File) => {
-    setFile(f);
-    setPreview(URL.createObjectURL(f));
+  useEffect(() => {
+    // Fetch unique categories once
+    import("../../../../services/api").then(api => {
+      api.getCategories().then(setExistingCategories).catch(console.error);
+    });
+  }, []);
+
+  const handleCategoryClick = (cat: string) => {
+    let current = categories.split(",").map(c => c.trim()).filter(Boolean);
+    if (!current.includes(cat)) {
+      current.push(cat);
+      setCategories(current.join(", "));
+    }
+  };
+
+  const handleFiles = (newFiles: FileList | File[]) => {
+    const valid = Array.from(newFiles).filter(f => f.type.startsWith("image/"));
+    setFiles(prev => [...prev, ...valid]);
+    setPreviews(prev => [...prev, ...valid.map(f => URL.createObjectURL(f))]);
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
-    const f = e.dataTransfer.files[0];
-    if (f) handleFile(f);
+    if (e.dataTransfer.files?.length) {
+      handleFiles(e.dataTransfer.files);
+    }
+  };
+
+  const removeFile = (index: number) => {
+    setFiles(prev => prev.filter((_, i) => i !== index));
+    setPreviews(prev => {
+       const newP = [...prev];
+       URL.revokeObjectURL(newP[index]);
+       newP.splice(index, 1);
+       return newP;
+    });
   };
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!file || !title.trim()) return;
+    if (files.length === 0 || !categories.trim()) return;
     setError(null);
     setUploading(true);
     setSuccess(false);
+    setUploadProgress({ current: 0, total: files.length });
+
     try {
-      const photo = await adminUploadPhoto(token, { title: title.trim(), caption, tags, file });
-      onSuccess(photo);
+      let uploadedCount = 0;
+      for (const file of files) {
+        setUploadProgress(prev => ({ ...prev, current: uploadedCount + 1 }));
+        const photo = await adminUploadPhoto(token, { categories: categories.trim(), caption, tags, file });
+        onSuccess(photo);
+        uploadedCount++;
+      }
       setSuccess(true);
-      setTitle(""); setCaption(""); setTags(""); setFile(null); setPreview(null);
+      setCategories(""); setCaption(""); setTags(""); 
+      setFiles([]); 
+      setPreviews(prev => { prev.forEach(p => URL.revokeObjectURL(p)); return []; });
+
+      let newCats = categories.split(",").map((c) => c.trim()).filter(Boolean);
+      setExistingCategories((prev) => Array.from(new Set([...prev, ...newCats])));
+
       setTimeout(() => setSuccess(false), 3000);
     } catch (err: any) {
       setError(err?.response?.data?.detail || "Upload failed. Check the server.");
     } finally {
       setUploading(false);
+      setUploadProgress({ current: 0, total: 0 });
     }
   };
 
@@ -90,23 +133,31 @@ function UploadPanel({ token, onSuccess }: { token: string; onSuccess: (p: Photo
           onDrop={handleDrop}
           onDragOver={(e) => e.preventDefault()}
           onClick={() => inputRef.current?.click()}
-          className="relative flex h-40 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-white/15 bg-white/3 transition-all hover:border-cyan-500/50 hover:bg-cyan-500/5"
+          className="relative flex h-32 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-white/15 bg-white/3 transition-all hover:border-cyan-500/50 hover:bg-cyan-500/5"
         >
-          {preview ? (
-            <img src={preview} alt="preview" className="h-full w-full rounded-2xl object-cover" />
-          ) : (
-            <>
-              <svg className="mb-2 h-10 w-10 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-              <p className="text-sm text-zinc-500">Drop image here or <span className="text-cyan-400">click to browse</span></p>
-              <p className="mt-1 text-xs text-zinc-600">JPEG, PNG or WebP</p>
-            </>
-          )}
-          <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} />
+          <svg className="mb-2 h-8 w-8 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+          <p className="text-sm text-zinc-500">Drop images/folder here or <span className="text-cyan-400">browse</span></p>
+          <p className="mt-1 text-[10px] text-zinc-500 font-medium uppercase tracking-widest">{files.length > 0 ? `${files.length} selected` : 'JPEG, PNG or WebP'}</p>
+          <input ref={inputRef} type="file" multiple accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => e.target.files?.length && handleFiles(e.target.files)} />
         </div>
+
+        {/* Thumbnail Preview Grid */}
+        {previews.length > 0 && (
+          <div className="flex flex-wrap gap-2 max-h-[140px] overflow-y-auto custom-scrollbar pr-1">
+            {previews.map((p, i) => (
+              <div key={i} className="relative w-14 h-14 rounded-xl overflow-hidden border border-zinc-200 dark:border-white/10 group shadow-sm shrink-0">
+                <img src={p} alt="preview" className="w-full h-full object-cover" />
+                <button type="button" onClick={() => removeFile(i)} className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 active:scale-95">
+                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Fields */}
         {[
-          { id: "title", label: "Title *", value: title, set: setTitle, placeholder: "E.g. Golden Hour at Patagonia", type: "text" },
+          { id: "categories", label: "Categories *", value: categories, set: setCategories, placeholder: "e.g. landscape, portrait (comma-separated)", type: "text" },
           { id: "caption", label: "Caption", value: caption, set: setCaption, placeholder: "Optional description…", type: "text" },
           { id: "tags", label: "Tags", value: tags, set: setTags, placeholder: "nature, landscape, 4k (comma-separated)", type: "text" },
         ].map(({ id, label, value, set, placeholder, type }) => (
@@ -118,23 +169,49 @@ function UploadPanel({ token, onSuccess }: { token: string; onSuccess: (p: Photo
               value={value}
               onChange={(e) => set(e.target.value)}
               placeholder={placeholder}
-              required={id === "title"}
+              required={id === "categories"}
               className="rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 px-4 py-3 text-sm text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none transition-all focus:border-cyan-500/50 focus:ring-4 focus:ring-cyan-500/10"
             />
+            {id === "categories" && existingCategories.length > 0 && (
+              <div className="mt-1 flex flex-wrap gap-1.5 max-h-32 overflow-y-auto shrink-0 pr-1" style={{ scrollbarWidth: 'thin' }}>
+                {existingCategories
+                  .filter((c) => {
+                    const typedTerms = categories.split(",").map(t => t.trim().toLowerCase());
+                    const lastTerm = typedTerms[typedTerms.length - 1]; 
+                    const previousTerms = typedTerms.slice(0, -1).filter(Boolean);
+                    
+                    // Don't show if already finalized
+                    if (previousTerms.includes(c.toLowerCase())) return false;
+                    // If typing, filter by it
+                    if (lastTerm) return c.toLowerCase().includes(lastTerm);
+                    return true;
+                  })
+                  .map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => handleCategoryClick(c)}
+                    className="rounded bg-zinc-100 dark:bg-white/10 px-2 py-0.5 text-[10px] font-medium text-zinc-600 dark:text-zinc-300 hover:bg-cyan-100 dark:hover:bg-cyan-900/30 transition-colors shrink-0"
+                  >
+                    + {c}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         ))}
 
         <button
           type="submit"
-          disabled={uploading || !file || !title.trim()}
+          disabled={uploading || files.length === 0 || !categories.trim()}
           className="mt-2 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-700 py-3 text-sm font-bold text-white shadow-lg shadow-cyan-500/20 transition-all hover:from-cyan-500 hover:to-blue-600 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {uploading ? (
             <>
               <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-              Uploading & Processing…
+              {uploadProgress.total > 1 ? `Uploading ${uploadProgress.current} of ${uploadProgress.total}…` : `Uploading & Processing…`}
             </>
-          ) : "Upload Photo"}
+          ) : `Upload ${files.length > 1 ? `${files.length} Photos` : 'Photo'}`}
         </button>
       </form>
     </div>
@@ -307,10 +384,10 @@ export default function AdminDashboard() {
                   {photos.slice(0, 6).map((photo) => (
                     <div key={photo.id} className="group relative aspect-square overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800">
                       {photo.thumbnail_url && (
-                        <Image src={photo.thumbnail_url} alt={photo.title} fill className="object-cover transition-transform duration-500 group-hover:scale-110" unoptimized />
+                        <Image src={photo.thumbnail_url} alt={photo.categories?.join(", ") || "Photo"} fill className="object-cover transition-transform duration-500 group-hover:scale-110" unoptimized />
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <p className="absolute bottom-2 left-2 right-2 truncate text-[10px] font-medium text-white opacity-0 group-hover:opacity-100 transition-opacity">{photo.title}</p>
+                      <p className="absolute bottom-2 left-2 right-2 truncate text-[10px] font-medium text-white opacity-0 group-hover:opacity-100 transition-opacity">{photo.categories?.join(", ")}</p>
                     </div>
                   ))}
                 </div>
@@ -353,7 +430,7 @@ export default function AdminDashboard() {
                       <div key={photo.id} className="group relative overflow-hidden rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 shadow-sm dark:shadow-none">
                         <div className="relative aspect-square">
                           {photo.thumbnail_url ? (
-                            <Image src={photo.thumbnail_url} alt={photo.title} fill className="object-cover transition-transform duration-500 group-hover:scale-110" unoptimized />
+                            <Image src={photo.thumbnail_url} alt={photo.categories?.join(", ") || "Photo"} fill className="object-cover transition-transform duration-500 group-hover:scale-110" unoptimized />
                           ) : (
                             <div className="flex h-full items-center justify-center bg-zinc-100 dark:bg-zinc-800">
                               <svg className="h-8 w-8 text-zinc-300 dark:text-zinc-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
@@ -379,7 +456,7 @@ export default function AdminDashboard() {
                           )}
                         </div>
                         <div className="p-3">
-                          <p className="truncate text-xs font-semibold text-zinc-900 dark:text-zinc-200">{photo.title}</p>
+                          <p className="truncate text-xs font-semibold text-zinc-900 dark:text-zinc-200">{photo.categories?.join(", ") || 'No Category'}</p>
                           <p className="mt-0.5 text-[10px] text-zinc-500 dark:text-zinc-600 font-medium">{photo.downloads || 0} downloads · {new Date(photo.created_at).toLocaleDateString()}</p>
                         </div>
                       </div>

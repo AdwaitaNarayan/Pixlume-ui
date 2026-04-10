@@ -53,7 +53,7 @@ export default function PhotoLightbox({ photo, allPhotos = [], onClose, onNaviga
     }
     const link = document.createElement("a");
     link.href = finalUrl;
-    link.download = `${photo.title || "pixlume"}-${label}.jpg`;
+    link.download = `${photo.categories ? photo.categories.join("_") : "pixlume"}-${label}.jpg`;
     link.target = "_blank";
     document.body.appendChild(link);
     link.click();
@@ -122,7 +122,7 @@ export default function PhotoLightbox({ photo, allPhotos = [], onClose, onNaviga
                 {highResUrl && (
                   <Image 
                     src={highResUrl} 
-                    alt={photo.title || "Wallpaper View"} 
+                    alt={photo.categories?.join(", ") || "Wallpaper View"} 
                     fill
                     className={`object-cover transition-all duration-700 ${isImageLoaded ? "opacity-100 scale-100" : "opacity-0 scale-95"}`} 
                     onLoad={() => setIsImageLoaded(true)}
@@ -193,7 +193,7 @@ export default function PhotoLightbox({ photo, allPhotos = [], onClose, onNaviga
                 
                 {/* Title & Badges */}
                 <div className="mb-12">
-                  <h1 className="font-headline text-5xl font-extrabold tracking-tighter mb-4 leading-tight">{photo.title || "Untitled Masterpiece"}</h1>
+                  <h1 className="font-headline text-5xl font-extrabold tracking-tighter mb-4 leading-tight capitalize">{photo.categories?.join(", ") || "Untitled Masterpiece"}</h1>
                   <div className="flex flex-wrap gap-3 items-center">
                     <span className="px-3 py-1 rounded-full bg-primary/10 text-primary font-bold uppercase text-[9px] tracking-widest flex items-center gap-1.5 border border-primary/20">
                       <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
@@ -212,7 +212,7 @@ export default function PhotoLightbox({ photo, allPhotos = [], onClose, onNaviga
                 <div className="mb-12">
                   <h3 className="font-headline text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/60 mb-4">The Narrative</h3>
                   <p className="text-on-surface-variant text-base leading-relaxed font-medium">
-                    {(photo as any).description || `A study of profound silence and atmospheric weight. Captured creatively, "${photo.title || "the photo"}" explores haunting beauty through a cinematic lens.`}
+                    {(photo as any).description || `A study of profound silence and atmospheric weight. Captured creatively, this piece explores haunting beauty through a cinematic lens.`}
                   </p>
                 </div>
 
