@@ -14,235 +14,82 @@ html {
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-plus-jakarta), var(--font-geist-sans), sans-serif;
   --font-mono: var(--font-geist-mono);
   
-  --color-error-container: #9f0519;
-  --color-on-primary-container: #004d57;
-  --color-surface-container-highest: #23262c;
-  --color-on-primary: #005762;
-  --color-on-primary-fixed-variant: #005762;
-  --color-tertiary-fixed: #f3f7fd;
-  --color-primary-fixed: #00e3fd;
-  --color-on-secondary-fixed-variant: #5f28c8;
-  --color-on-surface-variant: #aaabb0;
-  --color-error-dim: #d7383b;
-  --color-surface-container-high: #1d2025;
-  --color-on-primary-fixed: #003840;
-  --color-error: #ff716c;
-  --color-surface-dim: #0c0e12;
-  --color-surface-container: #171a1f;
-  --color-on-secondary: #280067;
-  --color-primary: #81ecff;
-  --color-on-surface: #f6f6fc;
-  --color-on-tertiary: #5b5f65;
-  --color-primary-fixed-dim: #00d4ec;
-  --color-inverse-on-surface: #53555a;
-  --color-on-secondary-fixed: #40009b;
-  --color-surface: #0c0e12;
-  --color-secondary-fixed-dim: #ceb9ff;
-  --color-surface-variant: #23262c;
-  --color-surface-tint: #81ecff;
-  --color-surface-container-lowest: #000000;
-  --color-primary-dim: #00d4ec;
-  --color-tertiary-dim: #e5e8ee;
-  --color-secondary-fixed: #dac9ff;
-  --color-on-tertiary-fixed: #474c51;
-  --color-secondary-dim: #8455ef;
-  --color-surface-container-low: #111318;
-  --color-tertiary: #f6f9ff;
-  --color-tertiary-container: #e7ebf1;
-  --color-inverse-primary: #006976;
-  --color-on-tertiary-container: #53575c;
-  --color-secondary-container: #5516be;
-  --color-surface-bright: #292c32;
-  --color-on-tertiary-fixed-variant: #64686e;
-  --color-inverse-surface: #f9f9ff;
-  --color-on-error-container: #ffa8a3;
-  --color-primary-container: #00e3fd;
-  --color-on-secondary-container: #d9c8ff;
-  --color-tertiary-fixed-dim: #e5e8ee;
-  --color-secondary: #ac8aff;
-  --color-background-dark: #0c0e12;
-  --color-on-error: #490006;
-  --color-outline: #74757a;
-  --color-outline-variant: #46484d;
+  --color-accent: #0891b2; /* Cyan 600 */
+  --color-accent-dark: #0e7490; /* Cyan 700 */
+  
+  /* Refined Neutral Palette */
+  --color-zinc-50: #fafafa;
+  --color-zinc-100: #f4f4f5;
+  --color-zinc-200: #e4e4e7;
+  --color-zinc-300: #d4d4d8;
+  --color-zinc-400: #a1a1aa;
+  --color-zinc-500: #71717a;
+  --color-zinc-600: #52525b;
+  --color-zinc-700: #3f3f46;
+  --color-zinc-800: #27272a;
+  --color-zinc-900: #18181b;
+  --color-zinc-950: #09090b;
 
   --font-headline: "Plus Jakarta Sans", sans-serif;
   --font-body: "Manrope", sans-serif;
-  --font-label: "Manrope", sans-serif;
 }
 
 .dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  --background: #09090b;
+  --foreground: #fafafa;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
-::-webkit-scrollbar {
-  display: none;
-}
-
-/* Hide scrollbar for IE, Edge and Firefox */
-html,
-body {
-  -ms-overflow-style: none;
-  /* IE and Edge */
-  scrollbar-width: none;
-  /* Firefox */
+/* ─── Refined Transitions ─────────────────────────────────────── */
+.transition-glass {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ─── Shimmer skeleton animation ─────────────────────────────────── */
 @keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-
-  100% {
-    background-position: 200% 0;
-  }
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
 .skeleton-shimmer {
-  background: linear-gradient(90deg,
-      #e4e4e7 25%,
-      #f4f4f5 50%,
-      #e4e4e7 75%);
+  background: linear-gradient(90deg, 
+    rgba(228, 228, 231, 0.5) 25%, 
+    rgba(244, 244, 245, 0.8) 50%, 
+    rgba(228, 228, 231, 0.5) 75%
+  );
   background-size: 200% 100%;
-  animation: shimmer 1.6s infinite;
+  animation: shimmer 2s infinite;
 }
 
 .dark .skeleton-shimmer {
-  background: linear-gradient(90deg,
-      #27272a 25%,
-      #3f3f46 50%,
-      #27272a 75%);
+  background: linear-gradient(90deg, 
+    rgba(39, 39, 42, 0.5) 25%, 
+    rgba(63, 63, 70, 0.8) 50%, 
+    rgba(39, 39, 42, 0.5) 75%
+  );
   background-size: 200% 100%;
-  animation: shimmer 1.6s infinite;
-}
-
-/* ─── Fade + slide-up entry for cards ────────────────────────────── */
-@keyframes fadeSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.97);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.card-enter {
-  animation: fadeSlideUp 0.45s ease both;
-}
-
-/* Staggered delay helpers */
-.card-enter-1 {
-  animation-delay: 0.05s;
-}
-
-.card-enter-2 {
-  animation-delay: 0.10s;
-}
-
-.card-enter-3 {
-  animation-delay: 0.15s;
-}
-
-.card-enter-4 {
-  animation-delay: 0.20s;
-}
-
-.card-enter-5 {
-  animation-delay: 0.25s;
-}
-
-.card-enter-6 {
-  animation-delay: 0.30s;
-}
-
-.card-enter-7 {
-  animation-delay: 0.35s;
-}
-
-.card-enter-8 {
-  animation-delay: 0.40s;
-}
-
-/* ─── Hero gradient animation ─────────────────────────────────────── */
-@keyframes gradientShift {
-  0% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-.animated-gradient {
-  background-size: 200% 200%;
-  animation: gradientShift 8s ease infinite;
-}
-
-/* ─── Ripple on tap ──────────────────────────────────────────────── */
-@keyframes ripple {
-  from {
-    transform: scale(0);
-    opacity: 0.4;
-  }
-
-  to {
-    transform: scale(4);
-    opacity: 0;
-  }
-}
-
-.ripple-btn {
-  position: relative;
-  overflow: hidden;
-}
-
-.ripple-btn::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: white;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.ripple-btn:active::after {
-  animation: ripple 0.5s ease-out forwards;
 }
 
 /* ─── Smooth page transitions ────────────────────────────────────── */
 @keyframes pageIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 main {
-  animation: pageIn 0.4s ease;
+  animation: pageIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 
 .custom-scrollbar::-webkit-scrollbar {
   width: 4px;

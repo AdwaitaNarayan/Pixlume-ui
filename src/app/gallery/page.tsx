@@ -14,26 +14,27 @@ function GalleryContent() {
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-950 transition-colors duration-300">
       {/* Breadcrumbs & Header */}
-      <div className="mx-auto max-w-[1400px] px-6 pt-24 md:px-12">
-        <nav className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-500">
-          <Link href="/" className="hover:text-cyan-600 transition-colors flex items-center gap-1">
-            <HomeIcon className="h-3 w-3" /> Home
+      <div className="mx-auto max-w-[1600px] px-6 pt-32 pb-12 md:px-12">
+        <nav className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400 mb-8">
+          <Link href="/" className="hover:text-zinc-900 dark:hover:text-white transition-colors">
+            Home
           </Link>
-          <ChevronRight className="h-3 w-3" />
-          <span className="text-zinc-900 dark:text-white">Full Gallery</span>
+          <span className="text-zinc-200 dark:text-zinc-800">/</span>
+          <span className="text-zinc-900 dark:text-white">Archive</span>
         </nav>
-        <div className="mt-4 flex flex-col gap-2">
-          <h1 className="text-4xl font-black tracking-tight text-zinc-900 dark:text-white sm:text-5xl">
-            Explore the <span className="bg-gradient-to-r from-cyan-500 to-indigo-500 bg-clip-text text-transparent">Full Collection</span>
+        
+        <div className="max-w-2xl">
+          <h1 className="text-4xl font-semibold tracking-tight text-zinc-900 dark:text-white sm:text-5xl italic font-serif">
+            Digital Archive
           </h1>
-          <p className="max-w-xl text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-            Browse through thousands of high-resolution professional photographs. Filter by resolution, category, and more to find the perfect shot for your project.
+          <p className="mt-4 text-zinc-500 dark:text-zinc-400 font-light text-lg">
+            A comprehensive gateway to our high-resolution photography collections.
           </p>
         </div>
       </div>
 
       {/* Main Gallery Component */}
-      <main className="pb-24">
+      <main className="pb-32">
         <Gallery initialSearch={initialSearch} />
       </main>
 

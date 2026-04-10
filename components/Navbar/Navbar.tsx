@@ -26,59 +26,51 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 border-b ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled
-          ? 'bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl border-zinc-200/50 dark:border-white/10 py-2 shadow-sm'
-          : 'bg-transparent border-transparent py-4'
+          ? 'bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md border-b border-zinc-200/50 dark:border-white/5 py-3 shadow-sm'
+          : 'bg-transparent py-6'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-14">
+      <div className="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-12">
+        <div className="flex items-center justify-between h-12">
           
           {/* ────── LOGO SECTION ────── */}
-          <Link href="/" className="flex items-center space-x-3 group">
-            <div className="relative">
-              <motion.div
-                whileHover={{ rotate: -10, scale: 1.1 }}
-                className="relative z-10 p-2.5 bg-gradient-to-br from-cyan-500 to-indigo-600 rounded-2xl shadow-xl shadow-cyan-500/30"
-              >
-                <Camera className="w-6 h-6 text-white" />
-              </motion.div>
-              {/* Backglow for the logo icon */}
-              <div className="absolute inset-0 bg-cyan-400 blur-xl opacity-30 group-hover:opacity-50 transition-opacity rounded-full shadow-cyan-500/50" />
+          <Link href="/" className="flex items-center space-x-2.5 group">
+            <div className="relative flex items-center justify-center">
+              <Camera className="w-5 h-5 text-zinc-900 dark:text-white transition-transform group-hover:scale-110" />
+              <div className="absolute inset-0 bg-cyan-500/20 blur-lg opacity-0 group-hover:opacity-100 transition-opacity rounded-full" />
             </div>
             
             <div className="flex flex-col">
-              <span className="text-2xl font-black tracking-tighter flex items-center gap-1.5 leading-none">
-                <span className="text-zinc-950 dark:text-white">Pix</span>
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-indigo-500">lume</span>
+              <span className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white leading-none">
+                Pixlume
               </span>
-              <span className="text-[11px] uppercase tracking-[0.3em] font-black text-zinc-400 dark:text-zinc-500 mt-1 leading-none">
+              <span className="text-[9px] uppercase tracking-[0.4em] font-medium text-zinc-400 dark:text-zinc-500 mt-0.5 leading-none">
                 Studio
               </span>
             </div>
           </Link>
 
           {/* ────── DESKTOP LINKS ────── */}
-          <div className="hidden md:flex items-center space-x-2">
+          <div className="hidden md:flex items-center space-x-1">
             {navLinks.map((link) => {
               const isActive = pathname === link.href || (link.href.includes("#") && pathname === "/");
               return (
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`relative px-5 py-2.5 text-sm font-black transition-all rounded-xl hover:bg-zinc-100 dark:hover:bg-white/5 ${
+                  className={`relative px-4 py-2 text-sm font-medium transition-all rounded-lg hover:text-zinc-900 dark:hover:text-white ${
                     isActive 
-                        ? "text-cyan-600 dark:text-white" 
-                        : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
+                        ? "text-zinc-950 dark:text-white" 
+                        : "text-zinc-500 dark:text-zinc-400"
                   }`}
                 >
                   {link.name}
                   {isActive && (
                       <motion.div 
                         layoutId="nav-active" 
-                        className="absolute bottom-1 left-5 right-5 h-1 bg-cyan-600 dark:bg-cyan-500 rounded-full"
-                        style={{ originX: 0.5 }}
+                        className="absolute bottom-0 left-4 right-4 h-0.5 bg-zinc-900 dark:bg-white rounded-full"
                       />
                   )}
                 </Link>
@@ -87,20 +79,20 @@ const Navbar = () => {
           </div>
 
           {/* ────── ACTIONS SECTION ────── */}
-          <div className="flex items-center gap-3">
-            {/* Theme Toggle Component */}
+          <div className="flex items-center gap-4">
             <ThemeToggle />
 
             {/* Mobile Menu Trigger */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-100 dark:bg-white/5 text-zinc-600 dark:text-white transition-colors"
+              className="md:hidden flex p-2 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors"
             >
-              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
       </div>
+
 
       {/* ────── MOBILE DROPDOWN MENU ────── */}
       <AnimatePresence>
