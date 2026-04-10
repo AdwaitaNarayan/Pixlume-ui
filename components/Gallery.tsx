@@ -25,6 +25,7 @@ export default function Gallery({ initialSearch = "" }: GalleryProps) {
   const [dateRange, setDateRange] = useState("");
   const [category, setCategory] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const [availableCategories, setAvailableCategories] = useState<string[]>([]);
 
   // Pagination state
   const [page, setPage] = useState(1);
@@ -78,6 +79,10 @@ export default function Gallery({ initialSearch = "" }: GalleryProps) {
   useEffect(() => {
     // Initial load
     loadPhotos(initialSearch);
+    
+    import("../services/api").then(api => {
+        api.getCategories().then(setAvailableCategories).catch(console.error);
+    });
 
     // Listen for hero search
     const handleHeroSearch = (e: Event) => {
@@ -221,9 +226,10 @@ export default function Gallery({ initialSearch = "" }: GalleryProps) {
                       <div
                         key={photo.id}
                         onClick={() => {
-                          setSearchTag(photo.title);
+                          const tag = photo.categories && photo.categories.length > 0 ? photo.categories[0] : "";
+                          setSearchTag(tag);
                           setShowSuggestions(false);
-                          loadPhotos(photo.title, resolution, dateRange, category, 1, false);
+                          loadPhotos(tag, resolution, dateRange, category, 1, false);
                         }}
                         className="flex cursor-pointer items-center gap-4 px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
                       >
@@ -236,7 +242,7 @@ export default function Gallery({ initialSearch = "" }: GalleryProps) {
                           <div className="h-10 w-10 shrink-0 rounded-lg bg-zinc-200 dark:bg-zinc-800" />
                         )}
                         <div className="flex-1 truncate text-sm font-medium text-zinc-900 dark:text-zinc-100">
-                          {photo.title}
+                          {photo.categories?.join(", ") || 'Photo'}
                           {photo.tags && photo.tags.length > 0 && (
                             <span className="ml-2 text-xs font-normal text-zinc-500">
                               in {photo.tags[0]}
@@ -299,12 +305,9 @@ export default function Gallery({ initialSearch = "" }: GalleryProps) {
                   className="flex-1 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm outline-none transition-all focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:focus:border-cyan-400"
                 >
                   <option value="">All Categories</option>
-                  <option value="landscape">Landscape</option>
-                  <option value="nature">Nature</option>
-                  <option value="architecture">Architecture</option>
-                  <option value="fashion">Fashion</option>
-                  <option value="technology">Technology</option>
-                  <option value="abstract">Abstract</option>
+                  {availableCategories.map(cat => (
+                      <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
+                  ))}
                 </select>
               </div>
             )}
