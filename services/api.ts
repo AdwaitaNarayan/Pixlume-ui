@@ -47,7 +47,7 @@ export interface PhotoListResponse {
 // In local dev, fall back to the direct backend URL.
 const isProduction = process.env.NODE_ENV === 'production';
 const baseURL = isProduction
-  ? '/api'
+  ? 'https://api.pixlume.online'
   : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000');
 
 const axiosClient = axios.create({
