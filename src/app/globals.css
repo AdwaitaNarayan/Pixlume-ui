@@ -1,259 +1,151 @@
 @import "tailwindcss";
 
-html {
-  scroll-behavior: smooth;
-}
-
+/* ─── Tailwind v4 class-based dark mode ──────────────────────────── */
 @variant dark (&:where(.dark, .dark *));
 
+/* ─── Google Fonts via layout.tsx head link ──────────────────────── */
+/* Plus Jakarta Sans is loaded externally; we reference it below */
+
+/* ─── CSS Variables ───────────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  
-  --color-error-container: #9f0519;
-  --color-on-primary-container: #004d57;
-  --color-surface-container-highest: #23262c;
-  --color-on-primary: #005762;
-  --color-on-primary-fixed-variant: #005762;
-  --color-tertiary-fixed: #f3f7fd;
-  --color-primary-fixed: #00e3fd;
-  --color-on-secondary-fixed-variant: #5f28c8;
-  --color-on-surface-variant: #aaabb0;
-  --color-error-dim: #d7383b;
-  --color-surface-container-high: #1d2025;
-  --color-on-primary-fixed: #003840;
-  --color-error: #ff716c;
-  --color-surface-dim: #0c0e12;
-  --color-surface-container: #171a1f;
-  --color-on-secondary: #280067;
-  --color-primary: #81ecff;
-  --color-on-surface: #f6f6fc;
-  --color-on-tertiary: #5b5f65;
-  --color-primary-fixed-dim: #00d4ec;
-  --color-inverse-on-surface: #53555a;
-  --color-on-secondary-fixed: #40009b;
-  --color-surface: #0c0e12;
-  --color-secondary-fixed-dim: #ceb9ff;
-  --color-surface-variant: #23262c;
-  --color-surface-tint: #81ecff;
-  --color-surface-container-lowest: #000000;
-  --color-primary-dim: #00d4ec;
-  --color-tertiary-dim: #e5e8ee;
-  --color-secondary-fixed: #dac9ff;
-  --color-on-tertiary-fixed: #474c51;
-  --color-secondary-dim: #8455ef;
-  --color-surface-container-low: #111318;
-  --color-tertiary: #f6f9ff;
-  --color-tertiary-container: #e7ebf1;
-  --color-inverse-primary: #006976;
-  --color-on-tertiary-container: #53575c;
-  --color-secondary-container: #5516be;
-  --color-surface-bright: #292c32;
-  --color-on-tertiary-fixed-variant: #64686e;
-  --color-inverse-surface: #f9f9ff;
-  --color-on-error-container: #ffa8a3;
-  --color-primary-container: #00e3fd;
-  --color-on-secondary-container: #d9c8ff;
-  --color-tertiary-fixed-dim: #e5e8ee;
-  --color-secondary: #ac8aff;
-  --color-background-dark: #0c0e12;
-  --color-on-error: #490006;
-  --color-outline: #74757a;
-  --color-outline-variant: #46484d;
-
-  --font-headline: "Plus Jakarta Sans", sans-serif;
-  --font-body: "Manrope", sans-serif;
-  --font-label: "Manrope", sans-serif;
+  --background: #fafafa;
+  --foreground: #111111;
 }
 
 .dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  --background: #0f0f0f;
+  --foreground: #f5f5f5;
+}
+
+/* ─── Theme tokens for Tailwind ──────────────────────────────────── */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: "Plus Jakarta Sans", "Geist Sans", system-ui, sans-serif;
+  --font-mono: "Geist Mono", monospace;
+
+  /* Material You / design system colours (used by Lightbox) */
+  --color-primary:                  #81ecff;
+  --color-on-primary:               #005762;
+  --color-primary-container:        #00e3fd;
+  --color-on-primary-container:     #004d57;
+  --color-secondary:                #ac8aff;
+  --color-on-secondary:             #280067;
+  --color-secondary-container:      #5516be;
+  --color-on-secondary-container:   #d9c8ff;
+  --color-surface:                  #0c0e12;
+  --color-surface-dim:              #0c0e12;
+  --color-surface-bright:           #292c32;
+  --color-surface-container-lowest: #000000;
+  --color-surface-container-low:    #111318;
+  --color-surface-container:        #171a1f;
+  --color-surface-container-high:   #1d2025;
+  --color-surface-container-highest:#23262c;
+  --color-surface-variant:          #23262c;
+  --color-surface-tint:             #81ecff;
+  --color-on-surface:               #f6f6fc;
+  --color-on-surface-variant:       #aaabb0;
+  --color-inverse-surface:          #f9f9ff;
+  --color-inverse-on-surface:       #53555a;
+  --color-inverse-primary:          #006976;
+  --color-outline:                  #74757a;
+  --color-outline-variant:          #46484d;
+  --color-error:                    #ff716c;
+  --color-on-error:                 #490006;
+  --color-error-container:          #9f0519;
+  --color-on-error-container:       #ffa8a3;
+  --color-tertiary:                 #f6f9ff;
+  --color-on-tertiary:              #5b5f65;
+  --color-tertiary-container:       #e7ebf1;
+  --color-on-tertiary-container:    #53575c;
+  --color-background-dark:          #0c0e12;
+  --font-headline: "Plus Jakarta Sans", sans-serif;
+  --font-body:     "Plus Jakarta Sans", sans-serif;
+  --font-label:    "Plus Jakarta Sans", sans-serif;
+}
+
+/* ─── Base ───────────────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
-::-webkit-scrollbar {
-  display: none;
-}
-
-/* Hide scrollbar for IE, Edge and Firefox */
-html,
-body {
+/* ─── Hide global scrollbar (body-level) ────────────────────────── */
+::-webkit-scrollbar        { display: none; }
+html, body {
   -ms-overflow-style: none;
-  /* IE and Edge */
   scrollbar-width: none;
-  /* Firefox */
 }
 
-/* ─── Shimmer skeleton animation ─────────────────────────────────── */
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
+/* ─── No-scrollbar utility (for individual elements) ────────────── */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 
-  100% {
-    background-position: 200% 0;
-  }
+/* ─── Lightbox custom scrollbar ──────────────────────────────────── */
+.custom-scrollbar::-webkit-scrollbar       { width: 4px; display: block; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(116, 117, 122, 0.25);
+  border-radius: 2px;
+}
+
+/* ─── Shimmer skeleton ────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
 }
 
 .skeleton-shimmer {
-  background: linear-gradient(90deg,
-      #e4e4e7 25%,
-      #f4f4f5 50%,
-      #e4e4e7 75%);
+  background: linear-gradient(90deg, #e4e4e7 25%, #f4f4f5 50%, #e4e4e7 75%);
   background-size: 200% 100%;
   animation: shimmer 1.6s infinite;
 }
 
 .dark .skeleton-shimmer {
-  background: linear-gradient(90deg,
-      #27272a 25%,
-      #3f3f46 50%,
-      #27272a 75%);
+  background: linear-gradient(90deg, #27272a 25%, #3f3f46 50%, #27272a 75%);
   background-size: 200% 100%;
   animation: shimmer 1.6s infinite;
 }
 
-/* ─── Fade + slide-up entry for cards ────────────────────────────── */
+/* ─── Card enter (fade + slide-up) ──────────────────────────────── */
 @keyframes fadeSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.97);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+  from { opacity: 0; transform: translateY(18px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
 }
 
-.card-enter {
-  animation: fadeSlideUp 0.45s ease both;
+.card-enter   { animation: fadeSlideUp 0.45s ease both; }
+.card-enter-1 { animation: fadeSlideUp 0.45s ease both 0.04s; }
+.card-enter-2 { animation: fadeSlideUp 0.45s ease both 0.08s; }
+.card-enter-3 { animation: fadeSlideUp 0.45s ease both 0.12s; }
+.card-enter-4 { animation: fadeSlideUp 0.45s ease both 0.16s; }
+.card-enter-5 { animation: fadeSlideUp 0.45s ease both 0.20s; }
+.card-enter-6 { animation: fadeSlideUp 0.45s ease both 0.24s; }
+.card-enter-7 { animation: fadeSlideUp 0.45s ease both 0.28s; }
+.card-enter-8 { animation: fadeSlideUp 0.45s ease both 0.32s; }
+
+/* ─── Smooth page entrance ───────────────────────────────────────── */
+@keyframes pageIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
-/* Staggered delay helpers */
-.card-enter-1 {
-  animation-delay: 0.05s;
-}
-
-.card-enter-2 {
-  animation-delay: 0.10s;
-}
-
-.card-enter-3 {
-  animation-delay: 0.15s;
-}
-
-.card-enter-4 {
-  animation-delay: 0.20s;
-}
-
-.card-enter-5 {
-  animation-delay: 0.25s;
-}
-
-.card-enter-6 {
-  animation-delay: 0.30s;
-}
-
-.card-enter-7 {
-  animation-delay: 0.35s;
-}
-
-.card-enter-8 {
-  animation-delay: 0.40s;
-}
-
-/* ─── Hero gradient animation ─────────────────────────────────────── */
-@keyframes gradientShift {
-  0% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-.animated-gradient {
-  background-size: 200% 200%;
-  animation: gradientShift 8s ease infinite;
-}
+main { animation: pageIn 0.35s ease; }
 
 /* ─── Ripple on tap ──────────────────────────────────────────────── */
 @keyframes ripple {
-  from {
-    transform: scale(0);
-    opacity: 0.4;
-  }
-
-  to {
-    transform: scale(4);
-    opacity: 0;
-  }
+  from { transform: scale(0); opacity: 0.4; }
+  to   { transform: scale(4); opacity: 0;   }
 }
 
-.ripple-btn {
-  position: relative;
-  overflow: hidden;
-}
-
-.ripple-btn::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: white;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.ripple-btn:active::after {
-  animation: ripple 0.5s ease-out forwards;
-}
-
-/* ─── Smooth page transitions ────────────────────────────────────── */
-@keyframes pageIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-main {
-  animation: pageIn 0.4s ease;
-}
-
-.custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
-  display: block;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(116, 117, 122, 0.2);
-  border-radius: 2px;
-}
+.ripple-btn              { position: relative; overflow: hidden; }
+.ripple-btn::after       { content: ""; position: absolute; inset: 0; border-radius: inherit; background: white; opacity: 0; pointer-events: none; }
+.ripple-btn:active::after{ animation: ripple 0.5s ease-out forwards; }

@@ -1,19 +1,23 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { Camera, Search, User, Menu, X, Layers, Sun, Moon } from 'lucide-react';
+import { Camera, Search, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import ThemeToggle from '../ThemeToggle';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchFocused, setSearchFocused] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
+    const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -24,77 +28,92 @@ const Navbar = () => {
     { name: 'About', href: '/#about' },
   ];
 
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+    router.push(`/gallery?search=${encodeURIComponent(searchQuery.trim())}`);
+    setSearchQuery('');
+    setSearchFocused(false);
+  };
+
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 border-b ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? 'bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl border-zinc-200/50 dark:border-white/10 py-2 shadow-sm'
-          : 'bg-transparent border-transparent py-4'
+          ? 'bg-white/95 dark:bg-[#0f0f0f]/95 backdrop-blur-xl shadow-sm border-b border-zinc-100 dark:border-white/5'
+          : 'bg-white dark:bg-[#0f0f0f]'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-14">
-          
-          {/* ────── LOGO SECTION ────── */}
-          <Link href="/" className="flex items-center space-x-3 group">
-            <div className="relative">
-              <motion.div
-                whileHover={{ rotate: -10, scale: 1.1 }}
-                className="relative z-10 p-2.5 bg-gradient-to-br from-cyan-500 to-indigo-600 rounded-2xl shadow-xl shadow-cyan-500/30"
-              >
-                <Camera className="w-6 h-6 text-white" />
-              </motion.div>
-              {/* Backglow for the logo icon */}
-              <div className="absolute inset-0 bg-cyan-400 blur-xl opacity-30 group-hover:opacity-50 transition-opacity rounded-full shadow-cyan-500/50" />
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6">
+        <div className="flex items-center gap-4 h-16">
+
+          {/* ── LOGO ── */}
+          <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
+            <div className="w-8 h-8 rounded-xl bg-zinc-900 dark:bg-white flex items-center justify-center transition-transform group-hover:scale-95">
+              <Camera className="w-4 h-4 text-white dark:text-zinc-900" />
             </div>
-            
-            <div className="flex flex-col">
-              <span className="text-2xl font-black tracking-tighter flex items-center gap-1.5 leading-none">
-                <span className="text-zinc-950 dark:text-white">Pix</span>
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-indigo-500">lume</span>
-              </span>
-              <span className="text-[11px] uppercase tracking-[0.3em] font-black text-zinc-400 dark:text-zinc-500 mt-1 leading-none">
-                Studio
-              </span>
-            </div>
+            <span className="text-[17px] font-bold tracking-tight text-zinc-900 dark:text-white hidden sm:block">
+              Pixlume
+            </span>
           </Link>
 
-          {/* ────── DESKTOP LINKS ────── */}
-          <div className="hidden md:flex items-center space-x-2">
+          {/* ── CENTERED SEARCH BAR ── */}
+          <form
+            onSubmit={handleSearch}
+            className="flex-1 max-w-2xl mx-auto"
+          >
+            <div
+              className={`flex items-center gap-3 rounded-full px-4 py-2.5 transition-all duration-200 ${
+                searchFocused
+                  ? 'bg-white dark:bg-zinc-800 ring-2 ring-zinc-900/10 dark:ring-white/10 shadow-md'
+                  : 'bg-zinc-100 dark:bg-zinc-800/60 hover:bg-zinc-200/70 dark:hover:bg-zinc-800'
+              }`}
+            >
+              <Search className={`shrink-0 transition-colors duration-200 ${searchFocused ? 'w-4 h-4 text-zinc-900 dark:text-white' : 'w-4 h-4 text-zinc-400'}`} />
+              <input
+                ref={searchRef}
+                type="text"
+                placeholder="Search high-quality images..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                onFocus={() => setSearchFocused(true)}
+                onBlur={() => setSearchFocused(false)}
+                className="flex-1 bg-transparent text-sm font-medium text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 outline-none min-w-0"
+              />
+              {searchQuery && (
+                <button type="button" onClick={() => setSearchQuery('')} className="shrink-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+          </form>
+
+          {/* ── DESKTOP NAV LINKS ── */}
+          <div className="hidden md:flex items-center gap-1 shrink-0">
             {navLinks.map((link) => {
-              const isActive = pathname === link.href || (link.href.includes("#") && pathname === "/");
+              const isActive = pathname === link.href;
               return (
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`relative px-5 py-2.5 text-sm font-black transition-all rounded-xl hover:bg-zinc-100 dark:hover:bg-white/5 ${
-                    isActive 
-                        ? "text-cyan-600 dark:text-white" 
-                        : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
+                  className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                    isActive
+                      ? 'text-zinc-900 dark:text-white bg-zinc-100 dark:bg-white/10'
+                      : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/5'
                   }`}
                 >
                   {link.name}
-                  {isActive && (
-                      <motion.div 
-                        layoutId="nav-active" 
-                        className="absolute bottom-1 left-5 right-5 h-1 bg-cyan-600 dark:bg-cyan-500 rounded-full"
-                        style={{ originX: 0.5 }}
-                      />
-                  )}
                 </Link>
               );
             })}
           </div>
 
-          {/* ────── ACTIONS SECTION ────── */}
-          <div className="flex items-center gap-3">
-            {/* Theme Toggle Component */}
+          {/* ── RIGHT ACTIONS ── */}
+          <div className="flex items-center gap-2 shrink-0">
             <ThemeToggle />
-
-            {/* Mobile Menu Trigger */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-100 dark:bg-white/5 text-zinc-600 dark:text-white transition-colors"
+              className="md:hidden flex h-9 w-9 items-center justify-center rounded-xl text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/5 transition-colors"
             >
               {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -102,28 +121,29 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* ────── MOBILE DROPDOWN MENU ────── */}
+      {/* ── MOBILE MENU ── */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden border-t border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-950 overflow-hidden"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.15 }}
+            className="md:hidden border-t border-zinc-100 dark:border-white/5 bg-white dark:bg-[#0f0f0f]"
           >
-            <div className="px-4 py-6 space-y-4">
+            <div className="px-4 py-4 space-y-1">
               {navLinks.map((link) => (
                 <Link
                   key={link.name}
                   href={link.href}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="block text-lg font-bold text-zinc-800 dark:text-zinc-200 hover:text-cyan-500 transition-colors px-2 py-1"
+                  className="block px-4 py-3 rounded-xl text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white transition-all"
                 >
                   {link.name}
                 </Link>
               ))}
-              <div className="pt-4 border-t border-zinc-100 dark:border-white/5 flex items-center justify-between px-2">
-                <span className="text-sm font-medium text-zinc-500">Dark Mode</span>
+              <div className="pt-3 border-t border-zinc-100 dark:border-white/5 flex items-center justify-between px-4">
+                <span className="text-sm text-zinc-500 dark:text-zinc-400">Dark Mode</span>
                 <ThemeToggle />
               </div>
             </div>

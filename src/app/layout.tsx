@@ -1,21 +1,24 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import ClientLayout from "../../components/ClientLayout";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-plus-jakarta",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Pixlume – High-Resolution Photography Studio",
-  description: "Discover, search, and download premium image variants from breathtaking 4K resolutions to thumbnails.",
+  title: "Pixlume – High-Resolution Photography",
+  description:
+    "Discover, search, and download premium high-resolution photography. A Pinterest-style image discovery platform for creators.",
+  openGraph: {
+    title: "Pixlume – High-Resolution Photography",
+    description: "Premium image discovery for creators.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -25,13 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
-      </head>
-      <ClientLayout
-        geistSansVariable={geistSans.variable}
-        geistMonoVariable={geistMono.variable}
-      >
+      <ClientLayout fontVariable={plusJakarta.variable}>
         {children}
       </ClientLayout>
     </html>

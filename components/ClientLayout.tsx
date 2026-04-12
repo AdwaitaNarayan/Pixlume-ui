@@ -6,23 +6,21 @@ import { ThemeProvider } from "./ThemeProvider";
 
 export default function ClientLayout({
   children,
-  geistSansVariable,
-  geistMonoVariable,
+  fontVariable,
 }: {
   children: React.ReactNode;
-  geistSansVariable: string;
-  geistMonoVariable: string;
+  fontVariable: string;
 }) {
   const pathname = usePathname();
   const isAdminPage = pathname?.startsWith("/admin");
 
   return (
     <body
-      className={`${geistSansVariable} ${geistMonoVariable} antialiased bg-white dark:bg-zinc-950 transition-colors duration-300`}
+      className={`${fontVariable} antialiased bg-[#fafafa] dark:bg-[#0f0f0f] transition-colors duration-300`}
     >
       <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
         {!isAdminPage && <Navbar />}
-        <main className={isAdminPage ? "" : "pt-20"}>
+        <main className={isAdminPage ? "" : "pt-16"}>
           {children}
         </main>
       </ThemeProvider>
