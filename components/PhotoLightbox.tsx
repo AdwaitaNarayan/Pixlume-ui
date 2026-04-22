@@ -406,11 +406,11 @@ export default function PhotoLightbox({ photo, allPhotos = [], onClose, onNaviga
                       >
                         <div className="px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/60 border-b border-white/10">Quality</div>
                         {[
-                            { key: 'image_8k_url', label: '8K Master', size: '7680 × 4320' },
-                            { key: 'image_4k_url', label: '4K Ultra', size: '3840 × 2160' },
-                            { key: 'image_2k_url', label: '2K QHD', size: '2560 × 1440' },
-                            { key: 'image_1080_url', label: '1080p FHD', size: '1920 × 1080' },
-                            { key: 'thumbnail_url', label: 'Standard Meta', size: 'Source Quality' },
+                            { key: 'image_8k_url', label: '8K Ultra Master', size: '7680 × 4320' },
+                            { key: 'image_4k_url', label: '4K Cinematic HD', size: '3840 × 2160' },
+                            { key: 'image_2k_url', label: '2K QHD Premium', size: '2560 × 1440' },
+                            { key: 'image_1080_url', label: '1080p Full HD', size: '1920 × 1080' },
+                            { key: 'thumbnail_url', label: 'Original Quality', size: 'Native Source' },
                         ].map((opt) => (
                             ((photo as any)[opt.key] || (opt.key === 'thumbnail_url' && !photo.image_1080_url)) && (
                                 <button
@@ -422,7 +422,12 @@ export default function PhotoLightbox({ photo, allPhotos = [], onClose, onNaviga
                                     className="w-full px-5 py-4 text-left border-b border-white/5 active:bg-white/10 flex justify-between items-center"
                                 >
                                     <div className="flex flex-col">
-                                        <span className="text-sm font-bold text-on-surface leading-none">{opt.label}</span>
+                                        <div className="flex items-center gap-2">
+                                          <span className="text-sm font-bold text-on-surface leading-none">{opt.label}</span>
+                                          {(photo as any)[opt.key] && !((photo as any)['image_8k_url'] && opt.key !== 'image_8k_url') && (
+                                            <span className="text-[6px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 font-black uppercase tracking-tighter">Native</span>
+                                          )}
+                                        </div>
                                         <span className="text-[9px] text-on-surface-variant mt-1">{opt.size}</span>
                                     </div>
                                     <Download className="h-4 w-4 text-primary" />

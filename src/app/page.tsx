@@ -108,11 +108,11 @@ export default function Home() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="text-center"
           >
-            <h1 className="text-6xl font-black tracking-tight text-zinc-900 dark:text-white sm:text-8xl lg:text-9xl">
+            <h1 className="text-5xl font-black tracking-tighter text-zinc-900 dark:text-white sm:text-8xl lg:text-9xl leading-[0.95]">
               Welcome to <br />
               <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 bg-clip-text text-transparent drop-shadow-sm">Pixlume</span>
             </h1>
-            <p className="mx-auto mt-8 max-w-2xl text-xl font-medium leading-relaxed text-zinc-600 dark:text-zinc-400 sm:text-2xl">
+            <p className="mx-auto mt-6 max-w-2xl text-lg font-medium leading-relaxed text-zinc-600 dark:text-zinc-400 sm:text-2xl sm:mt-8">
               Discover the art of professional photography. <br className="hidden sm:block" /> 
               Curated assets for the world's most ambitious projects.
             </p>
@@ -127,27 +127,27 @@ export default function Home() {
           >
             <form 
                 onSubmit={handleHeroSearchSubmit} 
-                className="group relative flex w-full items-center p-2 rounded-[2rem] bg-white dark:bg-zinc-900/40 border border-zinc-200 dark:border-white/10 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] backdrop-blur-3xl transition-all focus-within:ring-2 focus-within:ring-cyan-500/30 focus-within:border-cyan-500/50"
+                className="group relative flex flex-col md:flex-row w-full items-stretch md:items-center p-2 rounded-[1.5rem] md:rounded-[2.5rem] bg-white dark:bg-zinc-900/40 border border-zinc-200 dark:border-white/10 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] backdrop-blur-3xl transition-all focus-within:ring-2 focus-within:ring-cyan-500/30 focus-within:border-cyan-500/50"
             >
-                <div className="flex-1 flex items-center">
-                    <div className="ml-5 p-2.5 rounded-2xl bg-zinc-100 dark:bg-white/5 text-zinc-400 dark:text-zinc-500 transition-colors group-focus-within:text-cyan-500">
-                        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="flex-1 flex items-center min-h-[60px]">
+                    <div className="ml-5 p-2 rounded-xl bg-zinc-100 dark:bg-white/5 text-zinc-400 dark:text-zinc-500 transition-colors group-focus-within:text-cyan-500">
+                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                     </div>
                     <input 
                         type="text" 
-                        placeholder="Search for nature, architecture, textures..." 
+                        placeholder="Search for nature, architecture..." 
                         value={heroSearch}
                         onChange={e => setHeroSearch(e.target.value)}
-                        className="flex-1 px-5 py-5 bg-transparent text-xl font-medium text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600 outline-none"
+                        className="flex-1 px-4 py-4 md:py-6 bg-transparent text-lg md:text-xl font-medium text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600 outline-none"
                     />
                 </div>
                 <button 
                     type="submit" 
-                    className="relative overflow-hidden group rounded-[1.5rem] bg-zinc-900 dark:bg-white px-10 py-5 text-sm font-black text-white dark:text-zinc-900 transition-all hover:scale-[1.02] active:scale-95 shadow-2xl"
+                    className="relative overflow-hidden group rounded-[1.2rem] md:rounded-[2rem] bg-zinc-900 dark:bg-white px-8 py-4 md:py-6 text-sm font-black text-white dark:text-zinc-900 transition-all hover:scale-[1.02] active:scale-95 shadow-2xl mt-2 md:mt-0"
                 >
-                    <span className="relative z-10 flex items-center gap-3">
+                    <span className="relative z-10 flex items-center justify-center gap-3">
                         Search Gallery
                         <motion.span
                             animate={{ x: [0, 5, 0] }}
@@ -160,17 +160,19 @@ export default function Home() {
                 </button>
             </form>
 
-            <div className="mt-8 flex flex-wrap justify-center items-center gap-4">
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500">Trending Now</span>
-                {["Nature", "Urban", "Abstract", "Architecture"].map((tag) => (
-                    <button 
-                        key={tag}
-                        onClick={() => router.push(`/gallery?search=${tag}`)}
-                        className="px-5 py-2 rounded-xl text-xs font-black bg-zinc-100 dark:bg-white/5 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-white/10 transition-all border border-zinc-200/50 dark:border-white/5 hover:border-zinc-300 dark:hover:border-white/20 active:scale-95"
-                    >
-                        {tag}
-                    </button>
-                ))}
+            <div className="mt-8 w-full">
+                <div className="flex items-center gap-4 mb-4 px-2 overflow-x-auto no-scrollbar scroll-smooth">
+                    <span className="text-[10px] whitespace-nowrap font-black uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500">Trending Now</span>
+                    {["Nature", "Urban", "Abstract", "Architecture", "Minimal", "Cinematic"].map((tag) => (
+                        <button 
+                            key={tag}
+                            onClick={() => router.push(`/gallery?search=${tag}`)}
+                            className="px-6 py-3 min-h-[48px] rounded-xl text-xs font-black bg-zinc-100 dark:bg-white/5 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-white/10 transition-all border border-zinc-200/50 dark:border-white/5 hover:border-zinc-300 dark:hover:border-white/20 active:scale-95 whitespace-nowrap shadow-sm"
+                        >
+                            {tag}
+                        </button>
+                    ))}
+                </div>
             </div>
           </motion.div>
 
@@ -182,8 +184,8 @@ export default function Home() {
             transition={{ delay: 1, duration: 1 }}
             className="mt-24 flex flex-col items-center gap-12"
           >
-            <div className="flex items-center gap-8">
-                <div className="flex items-center -space-x-5">
+            <div className="flex flex-col sm:flex-row items-center gap-8 md:gap-12">
+                <div className="hidden sm:flex items-center -space-x-5">
                     {[
                         "https://i.pravatar.cc/100?u=12",
                         "https://i.pravatar.cc/100?u=24",
@@ -199,9 +201,9 @@ export default function Home() {
                         />
                     ))}
                 </div>
-                <div className="text-left">
-                    <p className="text-lg font-black text-zinc-900 dark:text-white leading-none">10,000+</p>
-                    <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mt-1">Global Creators</p>
+                <div className="text-center sm:text-left">
+                    <p className="text-xl md:text-2xl font-black text-zinc-900 dark:text-white leading-none">10,000+</p>
+                    <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mt-1">Global Contributors</p>
                 </div>
             </div>
 
