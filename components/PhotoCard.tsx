@@ -42,6 +42,7 @@ export default function PhotoCard({ photo, onClick, enterClass = "card-enter" }:
       transition={{ duration: 0.6, ease: "easeOut" }}
       onClick={() => onClick(photo)}
       className={`group relative cursor-pointer overflow-hidden rounded-2xl
+        border border-zinc-100 dark:border-zinc-900
         transition-all duration-500
         hover:shadow-[0_12px_48px_-8px_rgba(6,182,212,0.35)]
         hover:-translate-y-1
@@ -148,17 +149,25 @@ export default function PhotoCard({ photo, onClick, enterClass = "card-enter" }:
           </div>
         </div>
 
-        {/* ── Resolution badge ── */}
-        {photo.image_4k_url && (
-          <div className="absolute top-3 left-3 z-30
-            translate-y-1 opacity-0
-            group-hover:translate-y-0 group-hover:opacity-100
-            transition-all duration-300 delay-75">
-            <span className="rounded-full bg-black/50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-cyan-300 backdrop-blur-md border border-cyan-400/20">
+        {/* ── Badges ── */}
+        <div className="absolute top-3 left-3 z-30 flex gap-2
+          translate-y-1 opacity-0
+          group-hover:translate-y-0 group-hover:opacity-100
+          transition-all duration-300 delay-75">
+          {photo.image_4k_url && (
+            <span className="rounded-full bg-black/50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-cyan-300 backdrop-blur-md border border-cyan-400/20 shadow-lg">
               4K
             </span>
-          </div>
-        )}
+          )}
+          {photo.device_type === "both" && (
+            <span className="rounded-full bg-white/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-white backdrop-blur-md border border-white/20 shadow-lg flex items-center gap-1">
+              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
+              </svg>
+              Universal
+            </span>
+          )}
+        </div>
       </div>
 
       {/* ── Info strip — slides up from bottom on hover ── */}

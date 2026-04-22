@@ -31,6 +31,7 @@ function UploadPanel({ token, onSuccess }: { token: string; onSuccess: (p: Photo
   const [existingCategories, setExistingCategories] = useState<string[]>([]);
   const [caption, setCaption] = useState("");
   const [tags, setTags] = useState("");
+  const [deviceType, setDeviceType] = useState<"desktop" | "mobile" | "both">("desktop");
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -58,6 +59,21 @@ function UploadPanel({ token, onSuccess }: { token: string; onSuccess: (p: Photo
     const valid = Array.from(newFiles).filter(f => f.type.startsWith("image/"));
     setFiles(prev => [...prev, ...valid]);
     setPreviews(prev => [...prev, ...valid.map(f => URL.createObjectURL(f))]);
+
+    // Auto-predict device type from the first valid file
+    if (valid.length > 0) {
+      const img = new (window as any).Image();
+      img.onload = () => {
+        if (img.height > img.width) {
+          setDeviceType("mobile");
+        } else if (img.width > img.height * 1.5) {
+          setDeviceType("desktop");
+        } else {
+          setDeviceType("both");
+        }
+      };
+      img.src = URL.createObjectURL(valid[0]);
+    }
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -89,7 +105,13 @@ function UploadPanel({ token, onSuccess }: { token: string; onSuccess: (p: Photo
       let uploadedCount = 0;
       for (const file of files) {
         setUploadProgress(prev => ({ ...prev, current: uploadedCount + 1 }));
-        const photo = await adminUploadPhoto(token, { categories: categories.trim(), caption, tags, file });
+        const photo = await adminUploadPhoto(token, {
+          categories: categories.trim(),
+          caption,
+          tags,
+          device_type: deviceType,
+          file
+        });
         onSuccess(photo);
         uploadedCount++;
       }
@@ -200,6 +222,32 @@ function UploadPanel({ token, onSuccess }: { token: string; onSuccess: (p: Photo
             )}
           </div>
         ))}
+
+        {/* Device Type Selection */}
+        <div className="flex flex-col gap-2">
+          <label className="text-xs font-semibold uppercase tracking-widest text-zinc-500">Target Device</label>
+          <div className="flex gap-2 p-1 bg-zinc-50 dark:bg-zinc-950 rounded-2xl border border-zinc-200 dark:border-white/5 w-fit">
+            {[
+              { id: "desktop", label: "PC / Laptop", icon: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg> },
+              { id: "mobile", label: "Phone", icon: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg> },
+              { id: "both", label: "Both", icon: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg> },
+            ].map((type) => (
+              <button
+                key={type.id}
+                type="button"
+                onClick={() => setDeviceType(type.id as any)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                  deviceType === type.id
+                    ? "bg-white dark:bg-white/10 text-cyan-600 dark:text-cyan-400 shadow-sm border border-zinc-200 dark:border-white/10"
+                    : "text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                }`}
+              >
+                {type.icon}
+                {type.label}
+              </button>
+            ))}
+          </div>
+        </div>
 
         <button
           type="submit"
