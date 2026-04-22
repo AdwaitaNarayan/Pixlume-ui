@@ -26,7 +26,7 @@ export default function Home() {
   useEffect(() => {
     const fetchFeatured = async () => {
       try {
-        const data = await getPhotos(1, 4); // Just get the top 4
+        const data = await getPhotos(1, 12); // Fetch 12 for the infinite marquee
         setFeaturedPhotos(data.results);
       } catch (err) {
         console.error("Failed to load featured photos:", err);
@@ -226,30 +226,87 @@ export default function Home() {
           </motion.div>
         </div>
 
+        {/* Studio Status Bar */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 1.2 }}
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 w-full max-w-2xl px-6"
+        >
+          <div className="flex justify-between items-center px-8 py-5 rounded-2xl bg-white/40 dark:bg-zinc-900/40 backdrop-blur-3xl border border-white/20 dark:border-white/5 shadow-2xl">
+            {[
+              { label: "Assets", value: "2.4k+" },
+              { label: "Artists", value: "150+" },
+              { label: "Downloads", value: "125k+" }
+            ].map((stat, i) => (
+              <div key={i} className="text-center">
+                <p className="text-xs font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-600 mb-1">{stat.label}</p>
+                <p className="text-xl font-black text-zinc-900 dark:text-white">{stat.value}</p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
         {/* Bottom Fade Transition */}
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-white dark:from-zinc-950 to-transparent z-10" />
       </header>
 
       {/* Featured Preview Section */}
       <main className="relative z-20 -mt-10 bg-white dark:bg-zinc-950 rounded-t-[3rem] shadow-[0_0_40px_rgba(0,0,0,0.05)] dark:shadow-[0_0_40px_rgba(0,0,0,0.5)] transition-colors duration-300">
-        <section className="mx-auto max-w-7xl px-6 py-20 text-center lg:px-8">
-            <h2 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-white sm:text-4xl">Featured Shots</h2>
-            <p className="mx-auto mt-4 max-w-2xl text-zinc-600 dark:text-zinc-400">A glimpse of our latest high-resolution professional collections.</p>
+        <section className="mx-auto max-w-7xl px-6 py-24 text-center lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="mb-16 relative inline-block"
+            >
+              <span className="inline-block px-4 py-1.5 rounded-full bg-cyan-500/10 text-cyan-400 text-[10px] font-black uppercase tracking-[0.3em] border border-cyan-500/20 mb-6">Latest Selection</span>
+              <h2 className="text-4xl font-black tracking-tight text-zinc-900 dark:text-white sm:text-6xl mb-2">Featured Shots</h2>
+              <motion.div 
+                initial={{ width: 0 }}
+                whileInView={{ width: "60%" }}
+                viewport={{ once: true }}
+                transition={{ duration: 1, delay: 0.5 }}
+                className="h-1 bg-gradient-to-r from-cyan-400 to-transparent mx-auto rounded-full"
+              />
+              <p className="mx-auto mt-8 max-w-2xl text-lg font-medium text-zinc-500 dark:text-zinc-400 leading-relaxed italic">"A curated glimpse of our most profound high-resolution professional collections."</p>
+            </motion.div>
             
-            <div className="mt-12 columns-1 gap-6 sm:columns-2 lg:columns-4 [column-fill:_balance]">
-                {loadingFeatured ? (
-                    [1, 2, 3, 4].map(i => (
-                        <div key={i} className="mb-6 break-inside-avoid">
-                            <div className="skeleton-shimmer w-full rounded-2xl" style={{ height: i % 2 === 0 ? '400px' : '300px' }} />
-                        </div>
-                    ))
-                ) : (
-                    featuredPhotos.map((photo) => (
-                        <div key={photo.id} className="mb-6 break-inside-avoid">
+            {/* Infinite Marquee Container */}
+            <div className="relative w-full overflow-hidden mt-12 py-10">
+                {/* Edge Masks for seamless fading */}
+                <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-white dark:from-zinc-950 to-transparent z-10 pointer-events-none" />
+                <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-white dark:from-zinc-950 to-transparent z-10 pointer-events-none" />
+
+                <motion.div 
+                    className="flex gap-8 cursor-grab active:cursor-grabbing"
+                    animate={{ x: ["0%", "-50%"] }}
+                    transition={{ 
+                        duration: 40, 
+                        repeat: Infinity, 
+                        ease: "linear",
+                        repeatType: "loop"
+                    }}
+                    style={{ width: "fit-content" }}
+                    whileHover={{ transition: { duration: 80 } }} // Slow down on hover
+                >
+                    {/* Double the photos for seamless loop */}
+                    {[...featuredPhotos, ...featuredPhotos].map((photo, idx) => (
+                        <motion.div 
+                          key={`${photo.id}-${idx}`} 
+                          className="relative flex-shrink-0 w-[400px] aspect-[16/10] overflow-hidden rounded-[2rem] shadow-2xl bg-zinc-900 border border-white/5 group"
+                        >
                             <PhotoCard photo={photo} onClick={() => setSelectedPhoto(photo)} />
-                        </div>
-                    ))
-                )}
+                            
+                            {/* Cinematic Overlay */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-8 pointer-events-none">
+                               <p className="text-cyan-400 text-[10px] font-black uppercase tracking-[0.4em] mb-2">Master Series</p>
+                               <h4 className="text-white font-black text-xl leading-tight">{photo.categories?.[0] || "Curated Discovery"}</h4>
+                            </div>
+                        </motion.div>
+                    ))}
+                </motion.div>
             </div>
 
             <div className="mt-16 flex justify-center">
@@ -283,13 +340,23 @@ export default function Home() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6, ease: "easeOut", delay: idx * 0.1 }}
-                        className="group relative overflow-hidden rounded-3xl cursor-pointer"
+                        className="group relative h-[450px] overflow-hidden rounded-[2.5rem] cursor-pointer bg-zinc-900"
                       >
-                          <img src={col.image} alt={col.name} className="h-64 w-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                          <div className="absolute bottom-6 left-6 text-left">
-                              <h3 className="text-xl font-bold text-white">{col.name}</h3>
-                              <p className="text-sm text-zinc-300">{col.count} Photos</p>
+                          <img src={col.image} alt={col.name} className="absolute inset-0 h-full w-full object-cover transition-all duration-1000 group-hover:scale-110 opacity-60 group-hover:opacity-80" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent" />
+                          
+                          <div className="absolute top-8 right-8">
+                             <div className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-[10px] font-black text-white uppercase tracking-widest">{col.count} Photos</div>
+                          </div>
+
+                          <div className="absolute bottom-10 left-10 right-10 text-left">
+                              <p className="text-cyan-400 text-[10px] font-black uppercase tracking-[0.4em] mb-3">Series {idx + 1}</p>
+                              <h3 className="text-3xl font-black text-white leading-tight lg:pr-10">{col.name}</h3>
+                              <motion.div 
+                                className="w-12 h-1 bg-white mt-6 rounded-full"
+                                initial={{ width: 0 }}
+                                whileHover={{ width: 48 }}
+                              />
                           </div>
                       </motion.div>
                   ))}
