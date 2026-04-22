@@ -29,6 +29,7 @@ export interface Photo {
   image_4k_url: string | null;
   created_at: string; // ISO-8601
   downloads: number;
+  device_type: "desktop" | "mobile" | "both";
 }
 
 export interface PhotoListResponse {
@@ -97,6 +98,7 @@ export async function searchPhotos(
     date?: string;
     category?: string;
     collection?: string;
+    device_type?: string;
   }
 ): Promise<PhotoListResponse> {
   const { data } = await axiosClient.get<PhotoListResponse>('/photos/search', {

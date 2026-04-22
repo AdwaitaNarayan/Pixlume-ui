@@ -26,6 +26,7 @@ export default function Gallery({ initialSearch = "" }: GalleryProps) {
   const [resolution, setResolution] = useState("");
   const [dateRange, setDateRange] = useState("");
   const [category, setCategory] = useState("");
+  const [deviceType, setDeviceType] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [availableCategories, setAvailableCategories] = useState<string[]>([]);
 
@@ -43,6 +44,7 @@ export default function Gallery({ initialSearch = "" }: GalleryProps) {
     res: string = resolution,
     date: string = dateRange,
     cat: string = category,
+    device: string = deviceType,
     pageToLoad: number = 1,
     isFetchMore: boolean = false
   ) => {
@@ -54,8 +56,8 @@ export default function Gallery({ initialSearch = "" }: GalleryProps) {
       }
       setError(null);
 
-      const data = query || res || date || cat
-        ? await searchPhotos(query, pageToLoad, 20, { resolution: res, date, category: cat })
+      const data = query || res || date || cat || device
+        ? await searchPhotos(query, pageToLoad, 20, { resolution: res, date, category: cat, device_type: device })
         : await getPhotos(pageToLoad, 20);
 
       if (isFetchMore) {
@@ -92,7 +94,7 @@ export default function Gallery({ initialSearch = "" }: GalleryProps) {
       const customEvent = e as CustomEvent;
       if (customEvent.detail !== undefined) {
         setSearchTag(customEvent.detail);
-        loadPhotos(customEvent.detail, resolution, dateRange, category, 1, false);
+        loadPhotos(customEvent.detail, resolution, dateRange, category, deviceType, 1, false);
       }
     };
     window.addEventListener("hero-search", handleHeroSearch);
@@ -137,7 +139,7 @@ export default function Gallery({ initialSearch = "" }: GalleryProps) {
       (entries) => {
         const target = entries[0];
         if (target.isIntersecting && hasMore && !loading && !loadingMore) {
-          loadPhotos(searchTag, resolution, dateRange, category, page + 1, true);
+          loadPhotos(searchTag, resolution, dateRange, category, deviceType, page + 1, true);
         }
       },
       { rootMargin: "400px" } // Load a bit earlier before user reaches the very bottom
@@ -146,18 +148,19 @@ export default function Gallery({ initialSearch = "" }: GalleryProps) {
     if (loadingObserverRef.current) observer.observe(loadingObserverRef.current);
 
     return () => observer.disconnect();
-  }, [hasMore, loading, loadingMore, page, searchTag, resolution, dateRange, category]);
+  }, [hasMore, loading, loadingMore, page, searchTag, resolution, dateRange, category, deviceType]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setShowSuggestions(false);
-    loadPhotos(searchTag, resolution, dateRange, category, 1, false);
+    loadPhotos(searchTag, resolution, dateRange, category, deviceType, 1, false);
   };
 
   const handleFilterChange = (type: string, value: string) => {
-    if (type === "resolution") { setResolution(value); loadPhotos(searchTag, value, dateRange, category, 1, false); }
-    if (type === "date") { setDateRange(value); loadPhotos(searchTag, resolution, value, category, 1, false); }
-    if (type === "category") { setCategory(value); loadPhotos(searchTag, resolution, dateRange, value, 1, false); }
+    if (type === "resolution") { setResolution(value); loadPhotos(searchTag, value, dateRange, category, deviceType, 1, false); }
+    if (type === "date") { setDateRange(value); loadPhotos(searchTag, resolution, value, category, deviceType, 1, false); }
+    if (type === "category") { setCategory(value); loadPhotos(searchTag, resolution, dateRange, value, deviceType, 1, false); }
+    if (type === "device") { setDeviceType(value); loadPhotos(searchTag, resolution, dateRange, category, value, 1, false); }
   };
 
   const clearSearch = () => {
@@ -165,7 +168,9 @@ export default function Gallery({ initialSearch = "" }: GalleryProps) {
     setResolution("");
     setDateRange("");
     setCategory("");
-    loadPhotos("", "", "", "", 1, false);
+    setDeviceType("");
+    setSuggestion(null);
+    loadPhotos("", "", "", "", "", 1, false);
   };
 
   const handlePhotoClick = (photo: Photo) => {
@@ -226,7 +231,7 @@ export default function Gallery({ initialSearch = "" }: GalleryProps) {
                         const tag = photo.categories && photo.categories.length > 0 ? photo.categories[0] : "";
                         setSearchTag(tag);
                         setShowSuggestions(false);
-                        loadPhotos(tag, resolution, dateRange, category, 1, false);
+                        loadPhotos(tag, resolution, dateRange, category, deviceType, 1, false);
                       }}
                       className="flex cursor-pointer items-center gap-3 px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
                     >
@@ -283,7 +288,17 @@ export default function Gallery({ initialSearch = "" }: GalleryProps) {
               <option value="month">This Month</option>
             </select>
 
-            {(searchTag || resolution || category || dateRange) && (
+            <select
+              value={deviceType}
+              onChange={(e) => handleFilterChange("device", e.target.value)}
+              className="px-4 py-3 bg-zinc-50 dark:bg-zinc-900/50 border border-transparent rounded-lg text-xs font-medium outline-none cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors dark:text-zinc-300"
+            >
+              <option value="">Device</option>
+              <option value="desktop">PC / Laptop</option>
+              <option value="mobile">Phone</option>
+            </select>
+ 
+            {(searchTag || resolution || category || dateRange || deviceType) && (
               <button
                 onClick={clearSearch}
                 className="px-4 py-3 text-[10px] uppercase tracking-widest font-bold text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors"
@@ -331,7 +346,7 @@ export default function Gallery({ initialSearch = "" }: GalleryProps) {
               <button
                 onClick={() => {
                   setSearchTag(suggestion);
-                  loadPhotos(suggestion, resolution, dateRange, category, 1, false);
+                  loadPhotos(suggestion, resolution, dateRange, category, deviceType, 1, false);
                 }}
                 className="font-semibold text-cyan-600 hover:underline dark:text-cyan-400"
               >

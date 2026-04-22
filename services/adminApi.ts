@@ -51,12 +51,13 @@ export async function getAdminMe(token: string) {
 // ── Photos ────────────────────────────────────────────────────────────────────
 export async function adminUploadPhoto(
   token: string,
-  payload: { categories: string; caption?: string; tags?: string; file: File }
+  payload: { categories: string; caption?: string; tags?: string; device_type?: string; file: File }
 ): Promise<Photo> {
   const form = new FormData();
   form.append('categories', payload.categories);
   if (payload.caption) form.append('caption', payload.caption);
   if (payload.tags) form.append('tags', payload.tags);
+  if (payload.device_type) form.append('device_type', payload.device_type);
   form.append('file', payload.file);
 
   const { data } = await axios.post<Photo>(`${BASE}/admin/upload`, form, {
