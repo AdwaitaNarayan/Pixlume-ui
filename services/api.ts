@@ -27,6 +27,7 @@ export interface Photo {
   image_1080_url: string | null;
   image_2k_url: string | null;
   image_4k_url: string | null;
+  image_8k_url: string | null;
   created_at: string; // ISO-8601
   downloads: number;
   device_type: "desktop" | "mobile" | "both";

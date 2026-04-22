@@ -203,7 +203,7 @@ export default function PhotoLightbox({ photo, allPhotos = [], onClose, onNaviga
                       Pixlume Curated
                     </span>
                     <span className="px-3 py-1 rounded-full bg-surface-container text-on-surface-variant font-bold uppercase text-[9px] tracking-widest border border-outline-variant/10">
-                      {photo.image_4k_url ? "8K Digital" : photo.image_2k_url ? "4K UHD" : "High Res"}
+                      {photo.image_8k_url ? "8K Cinema" : photo.image_4k_url ? "4K UHD" : photo.image_2k_url ? "2K QHD" : "Full HD"}
                     </span>
                   </div>
                 </div>
@@ -282,7 +282,7 @@ export default function PhotoLightbox({ photo, allPhotos = [], onClose, onNaviga
                     <div className="space-y-1.5">
                       <span className="text-[9px] uppercase tracking-widest text-on-surface-variant/60 font-bold">Resolution</span>
                       <p className="font-label text-sm font-semibold text-on-surface">
-                        {photo.image_4k_url ? "7680 x 4320 (8K)" : photo.image_2k_url ? "3840 x 2160 (4K)" : "1920 x 1080 (HD)"}
+                        {photo.image_8k_url ? "7680 x 4320 (8K)" : photo.image_4k_url ? "3840 x 2160 (4K)" : photo.image_2k_url ? "2560 x 1440 (2K)" : "1920 x 1080 (HD)"}
                       </p>
                     </div>
                     <div className="space-y-1.5">
