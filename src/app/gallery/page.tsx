@@ -4,7 +4,6 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Gallery from "../../../components/Gallery";
 import Footer from "../../../components/Footer";
-import { ChevronRight, Home as HomeIcon } from "lucide-react";
 import Link from "next/link";
 
 function GalleryContent() {
@@ -13,24 +12,30 @@ function GalleryContent() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-950 transition-colors duration-300">
-      {/* Breadcrumbs & Header */}
-      <div className="mx-auto max-w-[1400px] px-6 pt-24 md:px-12">
-        <nav className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-500">
-          <Link href="/" className="hover:text-cyan-600 transition-colors flex items-center gap-1">
-            <HomeIcon className="h-3 w-3" /> Home
-          </Link>
-          <ChevronRight className="h-3 w-3" />
-          <span className="text-zinc-900 dark:text-white">Full Gallery</span>
-        </nav>
-        <div className="mt-4 flex flex-col gap-2">
-          <h1 className="text-4xl font-black tracking-tight text-zinc-900 dark:text-white sm:text-5xl">
-            Explore the <span className="bg-gradient-to-r from-cyan-500 to-indigo-500 bg-clip-text text-transparent">Full Collection</span>
-          </h1>
-          <p className="max-w-xl text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-            Browse through thousands of high-resolution professional photographs. Filter by resolution, category, and more to find the perfect shot for your project.
-          </p>
+      {/* Editorial Header */}
+      <header className="mx-auto max-w-[1600px] px-4 pt-12 md:px-8 md:pt-16 pb-8">
+        <div className="flex flex-col gap-6">
+          <nav className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-zinc-400 font-bold">
+            <Link href="/" className="hover:text-zinc-900 dark:hover:text-white transition-colors">
+              Home
+            </Link>
+            <span className="text-zinc-200 dark:text-zinc-800">/</span>
+            <span className="text-zinc-900 dark:text-white">Gallery</span>
+          </nav>
+          
+          <div className="flex flex-col gap-3 max-w-2xl">
+            <span className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-400">
+              Gallery Archive
+            </span>
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-zinc-900 dark:text-white leading-[1.1]">
+              Full Collection
+            </h1>
+            <p className="text-sm md:text-base text-zinc-500 dark:text-zinc-400 leading-relaxed">
+              Explore our curated selection of high-resolution professional photography.
+            </p>
+          </div>
         </div>
-      </div>
+      </header>
 
       {/* Main Gallery Component */}
       <main className="pb-24">
