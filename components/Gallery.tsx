@@ -15,6 +15,7 @@ export default function Gallery({ initialSearch = "" }: GalleryProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTag, setSearchTag] = useState(initialSearch);
+  const [suggestion, setSuggestion] = useState<string | null>(null);
 
   // Autocomplete state
   const [suggestions, setSuggestions] = useState<Photo[]>([]);
@@ -62,6 +63,7 @@ export default function Gallery({ initialSearch = "" }: GalleryProps) {
       } else {
         setPhotos(data.results);
       }
+      setSuggestion(data.suggestion || null);
 
       setHasMore(data.results.length === 20);
       setPage(pageToLoad);
@@ -268,7 +270,6 @@ export default function Gallery({ initialSearch = "" }: GalleryProps) {
               <option value="4k">4K Ultra HD</option>
               <option value="2k">2K Quad HD</option>
               <option value="1080p">1080p Full HD</option>
-              <option value="720p">720p HD</option>
             </select>
 
             <select
@@ -324,6 +325,21 @@ export default function Gallery({ initialSearch = "" }: GalleryProps) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
           <p className="text-xl text-zinc-500">No photos found matching your search.</p>
+          {suggestion && (
+            <div className="mt-2 text-sm text-zinc-400">
+              Did you mean{" "}
+              <button
+                onClick={() => {
+                  setSearchTag(suggestion);
+                  loadPhotos(suggestion, resolution, dateRange, category, 1, false);
+                }}
+                className="font-semibold text-cyan-600 hover:underline dark:text-cyan-400"
+              >
+                {suggestion}
+              </button>
+              ?
+            </div>
+          )}
           <button
             onClick={clearSearch}
             className="mt-4 text-sm font-semibold text-cyan-600 hover:text-cyan-500 dark:text-cyan-400"

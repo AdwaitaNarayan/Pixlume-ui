@@ -42,6 +42,7 @@ export default function PhotoCard({ photo, onClick, enterClass = "card-enter" }:
       transition={{ duration: 0.6, ease: "easeOut" }}
       onClick={() => onClick(photo)}
       className={`group relative cursor-pointer overflow-hidden rounded-2xl
+        border border-zinc-100 dark:border-zinc-900
         transition-all duration-500
         hover:shadow-[0_12px_48px_-8px_rgba(6,182,212,0.35)]
         hover:-translate-y-1

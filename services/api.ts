@@ -36,6 +36,7 @@ export interface PhotoListResponse {
   page: number;
   page_size: number;
   results: Photo[];
+  suggestion?: string;
 }
 
 // ---------------------------------------------------------------------------
