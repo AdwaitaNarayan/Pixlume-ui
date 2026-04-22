@@ -15,6 +15,7 @@ export default function Gallery({ initialSearch = "" }: GalleryProps) {
   const [error, setError] = useState<string | null>(null);
   const [searchTag, setSearchTag] = useState(initialSearch);
   const [suggestion, setSuggestion] = useState<string | null>(null);
+  const [discoveryCategories, setDiscoveryCategories] = useState<string[]>([]);
 
   // Autocomplete state
   const [suggestions, setSuggestions] = useState<Photo[]>([]);
@@ -64,6 +65,7 @@ export default function Gallery({ initialSearch = "" }: GalleryProps) {
         setPhotos(data.results);
       }
       setSuggestion(data.suggestion || null);
+      setDiscoveryCategories(data.discovery_categories || []);
 
       setHasMore(data.results.length === 20);
       setPage(pageToLoad);
@@ -264,7 +266,8 @@ export default function Gallery({ initialSearch = "" }: GalleryProps) {
                 { type: "device", value: deviceType, options: [
                   {label: "Device", val: ""},
                   {label: "PC / Laptop", val: "desktop"},
-                  {label: "Phone", val: "mobile"}
+                  {label: "Phone", val: "mobile"},
+                  {label: "Universal (Both)", val: "both"}
                 ]}
               ].map((filter) => (
                 <select
@@ -312,27 +315,56 @@ export default function Gallery({ initialSearch = "" }: GalleryProps) {
           <p className="text-sm font-bold uppercase tracking-widest">{error}</p>
         </div>
       ) : photos.length === 0 ? (
-        <div className="flex h-80 flex-col items-center justify-center rounded-3xl border border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/20">
-          <Search className="mb-4 h-12 w-12 text-zinc-300 dark:text-zinc-700" />
-          <p className="text-xl font-bold text-zinc-400 dark:text-zinc-600">No results found</p>
+        <div className="flex min-h-[400px] flex-col items-center justify-center rounded-3xl border border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/20 px-8 py-16 text-center">
+          <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800">
+            <Search className="h-10 w-10 text-zinc-300 dark:text-zinc-600" />
+          </div>
+          <p className="text-2xl font-black text-zinc-900 dark:text-white mb-2">No results found</p>
+          <p className="text-sm text-zinc-500 mb-8 max-w-sm">We couldn't find any photography matching your current search or filters.</p>
+          
           {suggestion && (
-            <div className="mt-4 flex items-center gap-2 text-sm text-zinc-500">
-              <span>Did you mean</span>
+            <div className="mb-12 flex items-center gap-3 text-sm">
+              <span className="text-zinc-400 font-medium">Did you mean</span>
               <button
                 onClick={() => {
                   setSearchTag(suggestion);
                   loadPhotos(suggestion, resolution, dateRange, category, deviceType, 1, false);
                 }}
-                className="font-black text-cyan-600 hover:text-cyan-500 dark:text-cyan-400 transition-colors underline decoration-cyan-500/30 underline-offset-4"
+                className="font-black text-cyan-600 hover:text-cyan-500 dark:text-cyan-400 transition-all border-b-2 border-cyan-500/30 hover:border-cyan-500"
               >
                 {suggestion}
               </button>
-              <span>?</span>
             </div>
           )}
+
+          {!suggestion && discoveryCategories.length > 0 && (
+            <div className="mb-12 w-full max-w-2xl">
+              <div className="flex items-center justify-center gap-3 mb-6">
+                <div className="h-px w-8 bg-zinc-200 dark:bg-zinc-800" />
+                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400">Curated Discovery</span>
+                <div className="h-px w-8 bg-zinc-200 dark:bg-zinc-800" />
+              </div>
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                {discoveryCategories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => {
+                        setSearchTag(""); // Clear the failed search text
+                        setCategory(cat);
+                        loadPhotos("", resolution, dateRange, cat, deviceType, 1, false);
+                    }}
+                    className="px-6 py-3 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 text-xs font-bold text-zinc-600 dark:text-zinc-400 hover:border-cyan-500 hover:text-cyan-500 transition-all shadow-sm hover:shadow-cyan-500/10"
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <button
             onClick={clearSearch}
-            className="mt-8 text-[11px] font-black uppercase tracking-[0.3em] text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors"
+            className="text-[11px] font-black uppercase tracking-[0.4em] text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors"
           >
             Clear all filters
           </button>
