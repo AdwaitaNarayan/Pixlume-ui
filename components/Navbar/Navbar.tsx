@@ -62,7 +62,6 @@ const Navbar = () => {
             </div>
           </Link>
 
-          {/* Desktop Navigation (Centered) */}
           <div className="hidden lg:flex items-center absolute left-1/2 -translate-x-1/2 space-x-1">
             {navLinks.map((link) => {
               const isActive = pathname === link.href || (link.href === '/#collections' && pathname === '/') || (link.href === '/#about' && pathname === '/');
@@ -70,9 +69,9 @@ const Navbar = () => {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`px-4 py-2 text-[13px] font-medium transition-all rounded-full ${
+                  className={`px-4 py-2 text-[13px] font-bold transition-all rounded-full ${
                     isActive 
-                      ? "text-zinc-900 dark:text-white bg-zinc-100 dark:bg-zinc-800" 
+                      ? "text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-500/10" 
                       : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
                   }`}
                 >
