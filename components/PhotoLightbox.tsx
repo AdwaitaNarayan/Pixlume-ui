@@ -88,11 +88,11 @@ export default function PhotoLightbox({ photo, allPhotos = [], onClose, onNaviga
           <X className="h-6 w-6 text-on-surface group-hover:scale-110 transition-transform" />
         </button>
 
-        <div className="flex-1 overflow-hidden p-8 md:p-12 lg:p-16 pt-24">
-          <div className="flex flex-col lg:flex-row h-full gap-12 lg:gap-20">
+        <div className="flex-1 overflow-y-auto lg:overflow-hidden p-6 md:p-12 lg:p-16 pt-24">
+          <div className="flex flex-col lg:flex-row lg:h-full gap-8 lg:gap-20">
             
             {/* Left Side: Large Asset Image */}
-            <div className="lg:w-[55%] h-full min-h-0 flex flex-col relative">
+            <div className="lg:w-[55%] h-[60vh] lg:h-full min-h-0 flex flex-col relative">
               
               {/* Navigation Arrows for Left Side */}
               {allPhotos.length > 1 && onNavigate && (
@@ -130,7 +130,7 @@ export default function PhotoLightbox({ photo, allPhotos = [], onClose, onNaviga
                   />
                 )}
                 
-                {/* ── Wallpaper Preview Overlay ── */}
+                {/* ── Smart Wallpaper Preview Overlay ── */}
                 <AnimatePresence>
                   {showWallpaperPreview && (
                     <motion.div
@@ -138,22 +138,60 @@ export default function PhotoLightbox({ photo, allPhotos = [], onClose, onNaviga
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 1.05 }}
                       onClick={() => setShowWallpaperPreview(false)}
-                      className="absolute inset-0 z-20 flex flex-col items-center justify-center p-8 bg-black/60 backdrop-blur-md cursor-pointer"
+                      className="absolute inset-0 z-20 flex flex-col items-center justify-center p-4 bg-black/80 backdrop-blur-xl cursor-pointer"
                     >
-                      {/* Mock Desktop Frame */}
-                      <div className="relative aspect-video w-full max-w-4xl overflow-hidden rounded-xl border-[4px] border-zinc-800 bg-zinc-900 shadow-[0_32px_128px_-16px_rgba(0,0,0,0.8)] pointer-events-none">
-                        <Image src={highResUrl || ""} fill className="object-cover" alt="Wallpaper Preview" />
-                        
-                        {/* Desktop Elements */}
-                        <div className="absolute bottom-0 left-0 right-0 h-8 bg-black/50 backdrop-blur-xl flex items-center justify-center px-4 gap-3 border-t border-white/10">
-                           <div className="flex gap-2">
-                             <div className="h-4 w-4 rounded-sm bg-white/30" />
-                             <div className="h-4 w-4 rounded-sm bg-white/20" />
-                             <div className="h-4 w-4 rounded-sm bg-white/20" />
+                      {photo.device_type === "mobile" ? (
+                        /* Ultra-Modern Flagship Frame (S24 Ultra / iPhone 17 Pro style) */
+                        <div className="relative h-[82vh] aspect-[9/19.5] max-w-[340px] rounded-[2.5rem] p-[3px] bg-gradient-to-b from-zinc-700 to-zinc-900 shadow-[0_40px_120px_-20px_rgba(0,0,0,1)] pointer-events-none ring-1 ring-white/10">
+                           {/* Ultra-Thin Bezel */}
+                           <div className="h-full w-full bg-zinc-950 rounded-[2.3rem] p-[6px] relative overflow-hidden">
+                              {/* Pill / Dynamic Island */}
+                              <div className="absolute top-4 left-1/2 -translate-x-1/2 h-5 w-16 bg-black rounded-full z-30 ring-1 ring-white/5" />
+                              
+                              <div className="relative h-full w-full overflow-hidden rounded-[1.8rem]">
+                                 <Image src={highResUrl || ""} fill className="object-cover" alt="Mobile Wallpaper" />
+                                 
+                                 {/* Minimalist OS UI */}
+                                 <div className="absolute top-10 left-0 right-0 px-8 flex justify-between items-center text-white/90">
+                                    <span className="text-xs font-bold tracking-tight">9:41</span>
+                                    <div className="flex gap-1.5 items-center">
+                                       <div className="w-4 h-2 border border-white/40 rounded-[2px]" />
+                                       <div className="w-1.5 h-1.5 bg-white/80 rounded-full" />
+                                    </div>
+                                 </div>
+                                 
+                                 {/* Floating Lock Screen Element */}
+                                 <div className="absolute top-[25%] left-0 right-0 flex flex-col items-center">
+                                    <span className="text-5xl font-light text-white/95 tracking-tighter">9:41</span>
+                                    <span className="text-[10px] uppercase font-bold tracking-[0.4em] text-white/60 mt-2">Wednesday, April 22</span>
+                                 </div>
+
+                                 <div className="absolute bottom-8 left-0 right-0 flex justify-center">
+                                    <div className="h-1 w-24 bg-white/30 rounded-full" />
+                                 </div>
+                              </div>
                            </div>
                         </div>
+                      ) : (
+                        /* Desktop Monitor Frame Mockup */
+                        <div className="relative aspect-video w-full max-w-4xl overflow-hidden rounded-xl border-[4px] border-zinc-800 bg-zinc-900 shadow-[0_32px_128px_-16px_rgba(0,0,0,0.8)] pointer-events-none">
+                          <Image src={highResUrl || ""} fill className="object-cover" alt="Desktop Wallpaper" />
+                          
+                          {/* Desktop Elements */}
+                          <div className="absolute bottom-0 left-0 right-0 h-8 bg-black/50 backdrop-blur-xl flex items-center justify-center px-4 gap-3 border-t border-white/10">
+                             <div className="flex gap-2">
+                               <div className="h-4 w-4 rounded-sm bg-white/30" />
+                               <div className="h-4 w-4 rounded-sm bg-white/20" />
+                               <div className="h-4 w-4 rounded-sm bg-white/20" />
+                             </div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div className="mt-8 flex flex-col items-center gap-2">
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-cyan-400 drop-shadow-lg">Simulation Mode</span>
+                        <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest italic">Tap anywhere to leave</p>
                       </div>
-                      <p className="mt-6 text-xs font-bold tracking-[0.2em] text-cyan-400 uppercase drop-shadow-lg">Click anywhere to close preview</p>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -188,12 +226,12 @@ export default function PhotoLightbox({ photo, allPhotos = [], onClose, onNaviga
             </div>
 
             {/* Right Side: Details & Actions (Expansive Layout) */}
-            <div className="flex-1 min-w-0 overflow-y-auto custom-scrollbar lg:pr-6 relative z-10">
-              <div className="max-w-[520px] mx-auto lg:mx-0 py-2">
+            <div className="flex-1 min-w-0 lg:overflow-y-auto custom-scrollbar lg:pr-6 relative z-10">
+              <div className="max-w-[520px] mx-auto lg:mx-0 py-2 pb-32 lg:pb-0">
                 
                 {/* Title & Badges */}
                 <div className="mb-12">
-                  <h1 className="font-headline text-5xl font-extrabold tracking-tighter mb-4 leading-tight capitalize">{photo.categories?.join(", ") || "Untitled Masterpiece"}</h1>
+                  <h1 className="font-headline text-3xl lg:text-5xl font-extrabold tracking-tighter mb-4 leading-tight capitalize">{photo.categories?.join(", ") || "Untitled Masterpiece"}</h1>
                   <div className="flex flex-wrap gap-3 items-center">
                     <span className="px-3 py-1 rounded-full bg-primary/10 text-primary font-bold uppercase text-[9px] tracking-widest flex items-center gap-1.5 border border-primary/20">
                       <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
@@ -216,8 +254,8 @@ export default function PhotoLightbox({ photo, allPhotos = [], onClose, onNaviga
                   </p>
                 </div>
 
-                {/* Action Buttons (Side by Side) */}
-                <div className="flex gap-4 mb-14 relative z-50">
+                {/* Action Buttons (Hide on Mobile) */}
+                <div className="hidden lg:flex gap-4 mb-14 relative z-50">
                   <div className="flex-[2] relative">
                     <button 
                       onClick={() => setShowDownloadMenu(!showDownloadMenu)}
@@ -239,12 +277,13 @@ export default function PhotoLightbox({ photo, allPhotos = [], onClose, onNaviga
                           <div className="px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/60 border-b border-white/10">Select Resolution</div>
                           <div className="flex flex-col">
                             {[
-                              { key: 'image_8k_url', label: '8K Master', size: '7680 × 4320' },
-                              { key: 'image_4k_url', label: '4K Ultra HD', size: '3840 × 2160' },
-                              { key: 'image_2k_url', label: '2K QHD', size: '2560 × 1440' },
+                              { key: 'image_8k_url', label: '8K Ultra Master', size: '7680 × 4320' },
+                              { key: 'image_4k_url', label: '4K Cinematic HD', size: '3840 × 2160' },
+                              { key: 'image_2k_url', label: '2K QHD Premium', size: '2560 × 1440' },
                               { key: 'image_1080_url', label: '1080p Full HD', size: '1920 × 1080' },
+                              { key: 'thumbnail_url', label: 'Original Quality', size: 'Native Source' },
                             ].map((opt) => (
-                              (photo as any)[opt.key] && (
+                              ((photo as any)[opt.key] || (opt.key === 'thumbnail_url' && !photo.image_1080_url)) && (
                                 <button
                                   key={opt.key}
                                   onClick={() => {
@@ -254,7 +293,12 @@ export default function PhotoLightbox({ photo, allPhotos = [], onClose, onNaviga
                                   className="group flex w-full items-center justify-between px-6 py-4 text-left hover:bg-surface-container-high transition-colors border-b border-white/5 last:border-0"
                                 >
                                   <div className="flex flex-col">
-                                    <span className="text-sm font-bold text-on-surface group-hover:text-primary transition-colors">{opt.label}</span>
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-sm font-bold text-on-surface group-hover:text-primary transition-colors">{opt.label}</span>
+                                      {(photo as any)[opt.key] && !((photo as any)['image_8k_url'] && opt.key !== 'image_8k_url') && (
+                                        <span className="text-[7px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 font-black uppercase tracking-tighter">Native</span>
+                                      )}
+                                    </div>
                                     <span className="text-[10px] text-on-surface-variant font-medium tracking-tight mb-0">{opt.size}</span>
                                   </div>
                                   <Download className="h-4 w-4 text-on-surface-variant group-hover:text-primary transition-colors" />
@@ -282,7 +326,11 @@ export default function PhotoLightbox({ photo, allPhotos = [], onClose, onNaviga
                     <div className="space-y-1.5">
                       <span className="text-[9px] uppercase tracking-widest text-on-surface-variant/60 font-bold">Resolution</span>
                       <p className="font-label text-sm font-semibold text-on-surface">
-                        {photo.image_8k_url ? "7680 x 4320 (8K)" : photo.image_4k_url ? "3840 x 2160 (4K)" : photo.image_2k_url ? "2560 x 1440 (2K)" : "1920 x 1080 (HD)"}
+                        {photo.image_8k_url ? "7680 x 4320 (8K)" : 
+                         photo.image_4k_url ? "3840 x 2160 (4K)" : 
+                         photo.image_2k_url ? "2560 x 1440 (2K)" : 
+                         photo.image_1080_url ? "1920 x 1080 (HD)" : 
+                         "Original Quality"}
                       </p>
                     </div>
                     <div className="space-y-1.5">
@@ -331,19 +379,67 @@ export default function PhotoLightbox({ photo, allPhotos = [], onClose, onNaviga
                   </div>
                 )}
 
-                {/* Footer Info */}
-                <div className="pt-8 border-t border-outline-variant/10 flex justify-between items-center pb-8 opacity-50">
-                  <div className="font-body text-[9px] tracking-[0.3em] uppercase text-on-surface-variant">
-                    Pixlume Curated © {new Date().getFullYear()}
-                  </div>
-                  <div className="flex gap-4">
-                    <span className="font-body text-[9px] tracking-widest uppercase cursor-pointer hover:text-on-surface transition-colors">Terms</span>
-                    <span className="font-body text-[9px] tracking-widest uppercase cursor-pointer hover:text-on-surface transition-colors">Rights</span>
-                  </div>
-                </div>
-
-              </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+        {/* ── Global Mobile Sticky Action Bar (Fixed to bottom of screen) ── */}
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-[100] p-4 bg-background-dark/40 backdrop-blur-3xl border-t border-white/5 safe-area-bottom">
+          <div className="flex gap-3 max-w-md mx-auto relative">
+             <div className="flex-[2] relative">
+                  <button 
+                    onClick={() => setShowDownloadMenu(!showDownloadMenu)}
+                    className="w-full bg-primary text-background-dark py-4 rounded-xl font-headline text-sm font-extrabold flex items-center justify-center gap-2 shadow-lg shadow-primary/20"
+                  >
+                    <Download className="h-4 w-4" />
+                    <span>Download</span>
+                  </button>
+
+                  <AnimatePresence>
+                    {showDownloadMenu && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 20 }}
+                        className="absolute bottom-full left-0 right-0 mb-4 overflow-hidden rounded-2xl border border-white/10 bg-surface/95 backdrop-blur-3xl shadow-2xl"
+                      >
+                        <div className="px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/60 border-b border-white/10">Quality</div>
+                        {[
+                            { key: 'image_8k_url', label: '8K Master', size: '7680 × 4320' },
+                            { key: 'image_4k_url', label: '4K Ultra', size: '3840 × 2160' },
+                            { key: 'image_2k_url', label: '2K QHD', size: '2560 × 1440' },
+                            { key: 'image_1080_url', label: '1080p FHD', size: '1920 × 1080' },
+                            { key: 'thumbnail_url', label: 'Standard Meta', size: 'Source Quality' },
+                        ].map((opt) => (
+                            ((photo as any)[opt.key] || (opt.key === 'thumbnail_url' && !photo.image_1080_url)) && (
+                                <button
+                                    key={opt.key}
+                                    onClick={() => {
+                                        handleDownload((photo as any)[opt.key], opt.label);
+                                        setShowDownloadMenu(false);
+                                    }}
+                                    className="w-full px-5 py-4 text-left border-b border-white/5 active:bg-white/10 flex justify-between items-center"
+                                >
+                                    <div className="flex flex-col">
+                                        <span className="text-sm font-bold text-on-surface leading-none">{opt.label}</span>
+                                        <span className="text-[9px] text-on-surface-variant mt-1">{opt.size}</span>
+                                    </div>
+                                    <Download className="h-4 w-4 text-primary" />
+                                </button>
+                            )
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+             </div>
+             <button 
+                onClick={() => setShowWallpaperPreview(true)}
+                className="flex-1 bg-surface-container text-on-surface border border-outline-variant/20 py-4 rounded-xl font-headline text-sm font-bold flex items-center justify-center gap-2"
+              >
+                <Monitor className="h-4 w-4 text-primary" />
+                <span>Preview</span>
+              </button>
           </div>
         </div>
       </motion.div>
