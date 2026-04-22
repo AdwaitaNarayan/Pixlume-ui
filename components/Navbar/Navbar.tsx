@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Camera, Search, User, Menu, X, Layers, Sun, Moon } from 'lucide-react';
+import { Camera, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import ThemeToggle from '../ThemeToggle';
@@ -13,12 +13,15 @@ const Navbar = () => {
   const pathname = usePathname();
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const navLinks = [
+    { name: 'Home', href: '/' },
     { name: 'Gallery', href: '/gallery' },
     { name: 'Collections', href: '/#collections' },
     { name: 'About', href: '/#about' },
@@ -26,16 +29,16 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 border-b ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b ${
         scrolled
-          ? 'bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl border-zinc-200/50 dark:border-white/10 py-2 shadow-sm'
-          : 'bg-transparent border-transparent py-4'
+          ? 'bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-zinc-200 dark:border-zinc-800 shadow-sm'
+          : 'bg-white/50 dark:bg-zinc-950/50 backdrop-blur-sm border-transparent'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-14">
+      <div className="max-w-[1600px] mx-auto px-4 md:px-8">
+        <div className="flex items-center justify-between h-20">
           
-          {/* ────── LOGO SECTION ────── */}
+          {/* Logo Section */}
           <Link href="/" className="flex items-center space-x-3 group">
             <div className="relative">
               <motion.div
@@ -59,71 +62,64 @@ const Navbar = () => {
             </div>
           </Link>
 
-          {/* ────── DESKTOP LINKS ────── */}
-          <div className="hidden md:flex items-center space-x-2">
+          {/* Desktop Navigation (Centered) */}
+          <div className="hidden lg:flex items-center absolute left-1/2 -translate-x-1/2 space-x-1">
             {navLinks.map((link) => {
-              const isActive = pathname === link.href || (link.href.includes("#") && pathname === "/");
+              const isActive = pathname === link.href || (link.href === '/#collections' && pathname === '/') || (link.href === '/#about' && pathname === '/');
               return (
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`relative px-5 py-2.5 text-sm font-black transition-all rounded-xl hover:bg-zinc-100 dark:hover:bg-white/5 ${
+                  className={`px-4 py-2 text-[13px] font-medium transition-all rounded-full ${
                     isActive 
-                        ? "text-cyan-600 dark:text-white" 
-                        : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
+                      ? "text-zinc-900 dark:text-white bg-zinc-100 dark:bg-zinc-800" 
+                      : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
                   }`}
                 >
                   {link.name}
-                  {isActive && (
-                      <motion.div 
-                        layoutId="nav-active" 
-                        className="absolute bottom-1 left-5 right-5 h-1 bg-cyan-600 dark:bg-cyan-500 rounded-full"
-                        style={{ originX: 0.5 }}
-                      />
-                  )}
                 </Link>
               );
             })}
           </div>
 
-          {/* ────── ACTIONS SECTION ────── */}
-          <div className="flex items-center gap-3">
-            {/* Theme Toggle Component */}
-            <ThemeToggle />
-
-            {/* Mobile Menu Trigger */}
+          {/* Right Actions */}
+          <div className="flex items-center gap-4">
+            <div className="hidden sm:block">
+              <ThemeToggle />
+            </div>
+            
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-100 dark:bg-white/5 text-zinc-600 dark:text-white transition-colors"
+              className="lg:hidden p-2 text-zinc-600 dark:text-zinc-300"
             >
-              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
       </div>
 
-      {/* ────── MOBILE DROPDOWN MENU ────── */}
+      {/* Mobile Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden border-t border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-950 overflow-hidden"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="lg:hidden absolute top-full left-0 right-0 bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 overflow-hidden"
           >
-            <div className="px-4 py-6 space-y-4">
+            <div className="px-6 py-8 space-y-4">
               {navLinks.map((link) => (
                 <Link
                   key={link.name}
                   href={link.href}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="block text-lg font-bold text-zinc-800 dark:text-zinc-200 hover:text-cyan-500 transition-colors px-2 py-1"
+                  className="block text-xl font-medium text-zinc-900 dark:text-zinc-100"
                 >
                   {link.name}
                 </Link>
               ))}
-              <div className="pt-4 border-t border-zinc-100 dark:border-white/5 flex items-center justify-between px-2">
-                <span className="text-sm font-medium text-zinc-500">Dark Mode</span>
+              <div className="pt-6 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+                <span className="text-sm font-medium text-zinc-500">Theme</span>
                 <ThemeToggle />
               </div>
             </div>

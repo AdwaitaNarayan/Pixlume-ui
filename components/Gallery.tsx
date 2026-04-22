@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { X } from "lucide-react";
 import { getPhotos, searchPhotos, Photo } from "../services/api";
 import PhotoCard from "./PhotoCard";
 import PhotoLightbox from "./PhotoLightbox";
@@ -170,146 +171,124 @@ export default function Gallery({ initialSearch = "" }: GalleryProps) {
   };
 
   return (
-    <section className="mx-auto w-full max-w-[1400px] px-6 py-12 md:px-12">
-      {/* Search Bar Section */}
-      <div className="mb-12 flex flex-col items-center gap-6">
-        <div className="flex w-full flex-col md:flex-row items-center justify-between gap-6">
-          <h2 className="text-3xl font-light tracking-tight text-zinc-900 dark:text-zinc-100 lg:text-4xl text-nowrap">
-            Curated <span className="font-semibold text-cyan-600 dark:text-cyan-400">Collection</span>
-          </h2>
-
-          <div className="flex w-full max-w-2xl flex-col items-end gap-3" ref={searchContainerRef}>
-            <div className="relative flex w-full items-center gap-2">
-              <form onSubmit={handleSearch} className="relative w-full">
-                <input
-                  type="text"
-                  placeholder="Search by tag, title..."
-                  value={searchTag}
-                  onChange={(e) => {
-                    setSearchTag(e.target.value);
-                  }}
-                  onFocus={() => {
-                    if (suggestions.length > 0) setShowSuggestions(true);
-                  }}
-                  className="w-full rounded-full border border-zinc-200 bg-white/50 px-6 py-3 pl-12 pr-12 shadow-sm backdrop-blur-md outline-none transition-all focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-500/10 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-white dark:focus:border-cyan-400 dark:focus:bg-zinc-900 sm:text-sm"
-                />
-                <svg
-                  className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-zinc-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-                {searchTag && (
-                  <button
-                    onClick={clearSearch}
-                    type="button"
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
-                  >
-                    ✕
-                  </button>
-                )}
-
-                {/* Autocomplete Dropdown */}
-                {showSuggestions && suggestions.length > 0 && (
-                  <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-2xl border border-zinc-100 bg-white py-2 shadow-xl dark:border-zinc-800 dark:bg-zinc-900">
-                    <div className="px-4 py-2 text-xs font-semibold tracking-wider text-zinc-500 dark:text-zinc-400">
-                      SUGGESTIONS
-                    </div>
-                    {suggestions.map((photo) => (
-                      <div
-                        key={photo.id}
-                        onClick={() => {
-                          const tag = photo.categories && photo.categories.length > 0 ? photo.categories[0] : "";
-                          setSearchTag(tag);
-                          setShowSuggestions(false);
-                          loadPhotos(tag, resolution, dateRange, category, 1, false);
-                        }}
-                        className="flex cursor-pointer items-center gap-4 px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
-                      >
-                        {photo.thumbnail_url ? (
-                          <div
-                            className="h-10 w-10 shrink-0 rounded-lg bg-cover bg-center"
-                            style={{ backgroundImage: `url(${photo.thumbnail_url})` }}
-                          />
-                        ) : (
-                          <div className="h-10 w-10 shrink-0 rounded-lg bg-zinc-200 dark:bg-zinc-800" />
-                        )}
-                        <div className="flex-1 truncate text-sm font-medium text-zinc-900 dark:text-zinc-100">
-                          {photo.categories?.join(", ") || 'Photo'}
-                          {photo.tags && photo.tags.length > 0 && (
-                            <span className="ml-2 text-xs font-normal text-zinc-500">
-                              in {photo.tags[0]}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </form>
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className={`flex shrink-0 items-center justify-center rounded-full p-3 transition-all ${showFilters || resolution || dateRange || category
-                    ? "bg-cyan-100 text-cyan-600 dark:bg-cyan-900/40 dark:text-cyan-400"
-                    : "border border-zinc-200 bg-white/50 text-zinc-600 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-300 dark:hover:bg-zinc-800"
-                  }`}
-                title="Advanced Filters"
+    <section className="mx-auto w-full max-w-[1600px] px-4 md:px-8">
+      {/* Unified Browsing Toolbar */}
+      <div className="mb-12 border-b border-zinc-100 dark:border-zinc-900 pb-12" ref={searchContainerRef}>
+        <div className="flex flex-col lg:flex-row items-center gap-4">
+          {/* Search Input */}
+          <div className="relative flex-1 w-full lg:w-auto">
+            <form onSubmit={handleSearch} className="relative w-full">
+              <input
+                type="text"
+                placeholder="Search gallery..."
+                value={searchTag}
+                onChange={(e) => setSearchTag(e.target.value)}
+                onFocus={() => {
+                  if (suggestions.length > 0) setShowSuggestions(true);
+                }}
+                className="w-full bg-zinc-50 dark:bg-zinc-900/50 border border-transparent focus:border-zinc-200 dark:focus:border-zinc-800 rounded-lg px-4 py-3 pl-11 text-sm outline-none transition-all dark:text-white"
+              />
+              <svg
+                className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
-                  />
-                </svg>
-              </button>
-            </div>
-
-            {/* Advanced Filters Panel */}
-            {showFilters && (
-              <div className="flex w-full flex-wrap items-center gap-3 rounded-2xl border border-zinc-100 bg-white/60 p-4 shadow-sm backdrop-blur-md transition-all dark:border-zinc-800/50 dark:bg-zinc-900/60">
-                <select
-                  value={resolution}
-                  onChange={(e) => handleFilterChange("resolution", e.target.value)}
-                  className="flex-1 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm outline-none transition-all focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:focus:border-cyan-400"
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+              {searchTag && (
+                <button
+                  onClick={clearSearch}
+                  type="button"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
                 >
-                  <option value="">Any Resolution</option>
-                  <option value="4k">4K Ultra HD</option>
-                  <option value="2k">2K Quad HD</option>
-                  <option value="1080p">1080p Full HD</option>
-                  <option value="720p">720p HD</option>
-                </select>
+                  <X className="h-3 w-3" />
+                </button>
+              )}
 
-                <select
-                  value={dateRange}
-                  onChange={(e) => handleFilterChange("date", e.target.value)}
-                  className="flex-1 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm outline-none transition-all focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:focus:border-cyan-400"
-                >
-                  <option value="">Any Time</option>
-                  <option value="today">Past 24 Hours</option>
-                  <option value="week">Past Week</option>
-                  <option value="month">Past Month</option>
-                </select>
-
-                <select
-                  value={category}
-                  onChange={(e) => handleFilterChange("category", e.target.value)}
-                  className="flex-1 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm outline-none transition-all focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:focus:border-cyan-400"
-                >
-                  <option value="">All Categories</option>
-                  {availableCategories.map(cat => (
-                      <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
+              {/* Autocomplete Dropdown */}
+              {showSuggestions && suggestions.length > 0 && (
+                <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-xl border border-zinc-100 bg-white py-2 shadow-2xl dark:border-zinc-800 dark:bg-zinc-900">
+                  <div className="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                    Suggestions
+                  </div>
+                  {suggestions.map((photo) => (
+                    <div
+                      key={photo.id}
+                      onClick={() => {
+                        const tag = photo.categories && photo.categories.length > 0 ? photo.categories[0] : "";
+                        setSearchTag(tag);
+                        setShowSuggestions(false);
+                        loadPhotos(tag, resolution, dateRange, category, 1, false);
+                      }}
+                      className="flex cursor-pointer items-center gap-3 px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
+                    >
+                      {photo.thumbnail_url ? (
+                        <div
+                          className="h-8 w-8 shrink-0 rounded bg-cover bg-center"
+                          style={{ backgroundImage: `url(${photo.thumbnail_url})` }}
+                        />
+                      ) : (
+                        <div className="h-8 w-8 shrink-0 rounded bg-zinc-100 dark:bg-zinc-800" />
+                      )}
+                      <div className="flex-1 truncate text-xs font-medium text-zinc-900 dark:text-zinc-100">
+                        {photo.categories?.join(", ") || 'Photo'}
+                      </div>
+                    </div>
                   ))}
-                </select>
-              </div>
+                </div>
+              )}
+            </form>
+          </div>
+
+          {/* Filters Row */}
+          <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+            <select
+              value={category}
+              onChange={(e) => handleFilterChange("category", e.target.value)}
+              className="px-4 py-3 bg-zinc-50 dark:bg-zinc-900/50 border border-transparent rounded-lg text-xs font-medium outline-none cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors dark:text-zinc-300"
+            >
+              <option value="">All Categories</option>
+              {availableCategories.map(cat => (
+                  <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
+              ))}
+            </select>
+
+            <select
+              value={resolution}
+              onChange={(e) => handleFilterChange("resolution", e.target.value)}
+              className="px-4 py-3 bg-zinc-50 dark:bg-zinc-900/50 border border-transparent rounded-lg text-xs font-medium outline-none cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors dark:text-zinc-300"
+            >
+              <option value="">Resolution</option>
+              <option value="4k">4K Ultra HD</option>
+              <option value="2k">2K Quad HD</option>
+              <option value="1080p">1080p Full HD</option>
+              <option value="720p">720p HD</option>
+            </select>
+
+            <select
+              value={dateRange}
+              onChange={(e) => handleFilterChange("date", e.target.value)}
+              className="px-4 py-3 bg-zinc-50 dark:bg-zinc-900/50 border border-transparent rounded-lg text-xs font-medium outline-none cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors dark:text-zinc-300 sm:block hidden"
+            >
+              <option value="">Time Period</option>
+              <option value="today">Today</option>
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+            </select>
+
+            {(searchTag || resolution || category || dateRange) && (
+              <button
+                onClick={clearSearch}
+                className="px-4 py-3 text-[10px] uppercase tracking-widest font-bold text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors"
+              >
+                Reset
+              </button>
             )}
           </div>
         </div>
@@ -317,9 +296,9 @@ export default function Gallery({ initialSearch = "" }: GalleryProps) {
 
       {/* Masonry Loading Section */}
       {loading && !loadingMore ? (
-        <div className="columns-1 gap-6 sm:columns-2 lg:columns-3 xl:columns-4 lg:gap-8 [column-fill:_balance]">
+        <div className="columns-1 gap-2 sm:columns-2 lg:columns-3 xl:columns-4 [column-fill:_balance]">
           {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-            <div key={i} className="mb-6 break-inside-avoid lg:mb-8">
+            <div key={i} className="mb-2 break-inside-avoid">
               <div
                 className="skeleton-shimmer w-full rounded-2xl"
                 style={{ height: i % 3 === 0 ? '450px' : i % 2 === 0 ? '320px' : '400px' }}
@@ -354,9 +333,9 @@ export default function Gallery({ initialSearch = "" }: GalleryProps) {
         </div>
       ) : (
         <div className="flex flex-col">
-          <div className="columns-1 gap-6 sm:columns-2 lg:columns-3 xl:columns-4 lg:gap-8">
+          <div className="columns-1 gap-2 sm:columns-2 lg:columns-3 xl:columns-4">
             {photos.map((photo, idx) => (
-              <div key={photo.id} className="mb-6 break-inside-avoid lg:mb-8">
+              <div key={photo.id} className="mb-2 break-inside-avoid">
                 <PhotoCard
                   photo={photo}
                   onClick={handlePhotoClick}
