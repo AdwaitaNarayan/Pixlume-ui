@@ -5,10 +5,7 @@
 import axios from 'axios';
 import { Photo } from './api';
 
-const isProduction = process.env.NODE_ENV === 'production';
-const BASE = isProduction
-  ? 'https://api.pixlume.online'
-  : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000');
+const BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 // ── Token storage ────────────────────────────────────────────────────────────
 export function saveToken(token: string) {
